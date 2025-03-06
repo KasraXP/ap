@@ -9,4 +9,3 @@ public class EvenNumbers {
         System.out.println(sum);
     }
 }
-
