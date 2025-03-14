@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/apjava.iml" filepath="$PROJECT_DIR$/apjava.iml" />
+      <module fileurl="file://$PROJECT_DIR$/l.iml" filepath="$PROJECT_DIR$/l.iml" />
     </modules>
   </component>
 </project>

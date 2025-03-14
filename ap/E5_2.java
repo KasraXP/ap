@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class DataSetMain {
+public class E5_2 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         DataSet data = new DataSet();
