@@ -11,8 +11,8 @@ public class FindBS {
         for (int i = 0; i < n; i++)
             arr[i] = sc.nextInt();
 
-        int L = Integer.MIN_VALUE;
-        int S = Integer.MAX_VALUE;
+        int L = arr[0];
+        int S = arr[0];
 
         for (int i = 0; i < n; i++) {
             if (arr[i] > L) L = arr[i];

@@ -13,8 +13,8 @@ public class SeparetedWord {
 
         String separetedWord = "";
         for (int i = 0; i < word.length(); i++) {
-            separetedWord = word.substring(i, i + 1);
-            System.out.println(separetedWord);
+
+            System.out.println(word.charAt(i) );
         }
 
 

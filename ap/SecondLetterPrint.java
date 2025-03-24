@@ -7,11 +7,11 @@ public class SecondLetterPrint {
         System.out.print("Enter a line: ");
         String line = scanner.nextLine();
 
-        String[] words = line.split(" ");
+        String[] gooooz = line.split( " ");
 
         System.out.println("Second letter of each word:");
-        for (int i = 0; i < words.length; i++) {
-            String word = words[i];
+        for (int i = 0; i < gooooz.length; i++) {
+            String word = gooooz[i];
             if (word.length() > 1) {
                 System.out.println(word.charAt(1));
             }
