@@ -149,12 +149,12 @@ public class Main_EX2_PM_2_2 {
 
             System.out.println("Score: " + Score);
 
-                if (flag) {
-                    System.out.println("You win");
-                    long finish = System.currentTimeMillis();
-                    long timeElapsed = finish - start;
-                    System.out.println("time: " + timeElapsed * 0.001 + " seconds");
-                }
+            if (flag) {
+                System.out.println("You win");
+                long finish = System.currentTimeMillis();
+                long timeElapsed = finish - start;
+                System.out.println("time: " + timeElapsed * 0.001 + " seconds");
+            }
 
             try {
                 Thread.sleep(1000);
