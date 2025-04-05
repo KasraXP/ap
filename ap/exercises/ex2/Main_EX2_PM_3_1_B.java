@@ -130,7 +130,7 @@ public class Main_EX2_PM_3_1_B extends JFrame implements KeyListener {
         else if (pacmanPoint.x <= 1) {
             pacmanPoint.x++;
         }
-        else if (pacmanPoint.y <= 1) {
+        else if (pacmanPoint.y <= 7) {
             pacmanPoint.y++;
         }
 
