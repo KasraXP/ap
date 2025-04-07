@@ -9,28 +9,29 @@ public class Main_EX2_PM_2_4 {
 
     public static void main(String[] args) {
 
-        int k=9;
-        int c=15;
+        int k = 9;
+        int c = 15;
 
         Random rnd = new Random();
 
-        PacmanEngine pacmanEngine = new PacmanEngine(k,c);
+        PacmanEngine pacmanEngine = new PacmanEngine(k, c);
 
-        while(true) {
+        while (true) {
             pacmanEngine.printMatrix();
             pacmanEngine.printScore();
             pacmanEngine.printRemainTime();
 
             try {
                 Thread.sleep(2000);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
-            int direction=rnd.nextInt(4);
+            int direction = rnd.nextInt(4);
             pacmanEngine.move(direction);
             pacmanEngine.save();
         }
 
-    }
+     }
 }
 
 class PacmanEngine {
@@ -48,7 +49,7 @@ class PacmanEngine {
 
     }
 
-    void designMap(int k, int c) {
+    public void designMap(int k, int c) {
         matrix = new char[k + 2][k + 2];
         for (int i = 0; i < k + 2; i++) {
             for (int j = 0; j < k + 2; j++) {
@@ -138,10 +139,11 @@ class PacmanEngine {
         }
     }
 
-    void save(){
+    void save() {
         try (PrintWriter writer = new PrintWriter(new FileWriter(SAVE_FILE))) {
             writer.println(k);
-            writer.println(R + "," + C);
+            writer.println(R);
+            writer.println(C);
             writer.println(score);
             writer.println(c);
             for (int i = 0; i < k + 2; i++) {
@@ -152,6 +154,4 @@ class PacmanEngine {
             System.out.println("Error saving the game: " + e.getMessage());
         }
     }
-
-
 }
