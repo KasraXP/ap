@@ -26,7 +26,7 @@ public class Main_EX3_LM_1_2_A {
             PrintWriter bookWriter = new PrintWriter(new PrintWriter("books.txt"));
 
             for (Book book : books) {
-                bookWriter.println(book.title + " " + book.author + " " + book.pages + book.year);
+                bookWriter.println(book.title + "," + book.author + "," + book.pages + "," + book.year);
             }
             bookWriter.close();
 
@@ -38,7 +38,7 @@ public class Main_EX3_LM_1_2_A {
             PrintWriter studentWriter = new PrintWriter(new FileWriter("students.txt"));
 
             for (Student student : students) {
-                studentWriter.println(student.name + " " + student.surename + " " + student.studentID + " " + student.major);
+                studentWriter.println(student.name + "," + student.surename + "," + student.studentID + "," + student.major);
             }
             studentWriter.close();
 
