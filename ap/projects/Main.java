@@ -127,7 +127,7 @@ class Main {
                                 break;
 
                             case 5:
-                                managerRunning = false; // ← اصلاح شد
+                                managerRunning = false;
                                 System.out.println("Exiting manager menu...");
                                 break;
 
