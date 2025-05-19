@@ -1,14 +1,12 @@
 package projects;
 
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.time.LocalDateTime;
+import java.util.Random;
 import java.util.Scanner;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 class Main {
     public static void main(String[] args) {
@@ -19,14 +17,18 @@ class Main {
         ArrayList<Book> books = loadFromFile.loadBooks("Books.txt");
         ArrayList<Student> students = loadFromFile.loadStudents("Students.txt");
         ArrayList<Librarian> librarians = loadFromFile.loadLibrarians("Librarians.txt");
+        ArrayList<LoanRequest> loansRequests = new ArrayList<>();
         DataProcessor processor = new DataProcessor(input);
-        Manager manager = new Manager("Ali","Jamshidy","PHP");
+        ArrayList<Loan> loans = loadFromFile.loadLoans("Loans.txt",books,students,librarians);
+        Library library = new Library("Centeral Library", books, students, librarians, loans);
+        Manager manager = new Manager("Ali", "Jamshidy", "PHP");
         librarians.add(new Librarian("Reza", "Dalairy", "123456789"));
-        books.add(new Book("Shab","Mohammad Boomipoor",156,1396));
-        students.add(new Student("Saadegh","Momeni","857463528","Law student",LocalDate.now()));
+        books.add(new Book("Shab", "Mohammad Boomipoor", 156, 1396));
+        students.add(new Student("Saadegh", "Momeni", "403463129", "Law student", LocalDate.now()));
 
         Menu menu = new Menu();
 
+        System.out.println("Welcome to library!");
         while (true) {
             menu.showMainMenu();
 
@@ -42,16 +44,28 @@ class Main {
                                 break;
 
                             case 2:
-                                processor.printStudentInfo(processor.searchStudentById(students, input));
+                                Student student = processor.searchStudentById(students, input);
+                                if (student == null) {
+                                    studentRunning = false;
+                                    break;
+                                } else
+                                    processor.printStudentInfo(student);
+
 
                                 boolean loggedIn = true;
                                 while (loggedIn) {
                                     menu.studentSecondMenu();
                                     switch (menu.getOption()) {
                                         case 1:
-                                            processor.printBookInfo(processor.searchBookByTitle(books, input));
+                                            Book book = processor.searchBookByTitle(books, input);
+                                            processor.printBookInfo(book);
                                             break;
+
                                         case 2:
+                                            processor.chooseBookLoanAndRequest(student, books, librarians, loansRequests, input);
+                                            saveToFile.saveLoans(loans, "Loans.txt");
+                                            break;
+
                                         case 3:
                                         case 4:
                                             processor.notImplementedYet();
@@ -76,8 +90,11 @@ class Main {
                     break;
 
                 case 2:
-                    processor.printLibrarianInfo(processor.searchLibrarianByEmployeeId(librarians, input));
                     boolean librarianRunning = true;
+
+
+                    Librarian librarian = processor.searchLibrarianByEmployeeId(librarians, input);
+                    processor.printLibrarianInfo(librarian);
                     while (librarianRunning) {
                         menu.librarianMenu();
                         switch (menu.getOption()) {
@@ -87,15 +104,12 @@ class Main {
                                 break;
 
                             case 2:
-                                processor.changeLibrarianId(
-                                        processor.searchLibrarianByEmployeeId(librarians, input),
-                                        input
-                                );
+                                processor.changeLibrarianId(processor.searchLibrarianByEmployeeId(librarians, input), input);
                                 saveToFile.saveLibrarian(librarians, "Librarians.txt");
                                 break;
 
                             case 3:
-                                processor.notImplementedYet();
+                                processor.handleRequestsForLibrarian(loansRequests, loans, input);
                                 break;
 
                             case 4:
@@ -127,7 +141,7 @@ class Main {
                                 break;
 
                             case 5:
-                                managerRunning = false; // ← اصلاح شد
+                                managerRunning = false;
                                 System.out.println("Exiting manager menu...");
                                 break;
 
@@ -145,12 +159,8 @@ class Main {
                 default:
                     System.out.println("Invalid option\nPlease try again");
             }
-
-
         }
     }
-
-
 }
 
 class SaveToFile {
@@ -195,6 +205,18 @@ class SaveToFile {
         }
     }
 
+    void saveLoans(ArrayList<Loan> loans, String fileName) {
+        try {
+            PrintWriter writer = new PrintWriter(fileName);
+            for (Loan loan : loans) {
+                writer.println(loan.toStringLoans());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error while saving loans file" + e.getMessage());
+        }
+    }
+
 }
 
 class LoadFromFile {
@@ -205,7 +227,9 @@ class LoadFromFile {
         String author = parts[1];
         int pages = Integer.parseInt(parts[2]);
         int publishedDate = Integer.parseInt(parts[3]);
-        return new Book(title, author, pages, publishedDate);
+        boolean isLoaned = Boolean.parseBoolean(parts[4]);
+        int loanCount = Integer.parseInt(parts[5]);
+        return new Book(title, author, pages, publishedDate, isLoaned, loanCount);
     }
 
     public ArrayList<Book> loadBooks(String filename) {
@@ -273,36 +297,104 @@ class LoadFromFile {
         return librarians;
     }
 
+    public Loan fromStringLoans(
+            String line,
+            ArrayList<Book> books,
+            ArrayList<Student> students,
+            ArrayList<Librarian> librarians) {
 
+        String[] parts = line.split(",");
+        String bookTitle = parts[0];
+        String studentId = parts[1];
+        String librarianId = parts[2];
+        LocalDateTime loanDate = LocalDateTime.parse(parts[3]);
+        LocalDateTime dueDate = LocalDateTime.parse(parts[4]);
+        LocalDateTime returnDate = parts[5].isEmpty() ? null : LocalDateTime.parse(parts[5]);
+
+        Book book = null;
+        Student student = null;
+        Librarian librarian = null;
+
+        for (Book b : books) {
+            if (b.getTitle().equals(bookTitle)) {
+                book = b;
+                break;
+            }
+        }
+
+        for (Student s : students) {
+            if (s.getStudentId().equals(studentId)) {
+                student = s;
+                break;
+            }
+        }
+
+
+        for (Librarian l : librarians) {
+            if (l.getEmployeeId().equals(librarianId)) {
+                librarian = l;
+                break;
+            }
+        }
+
+        if (book != null && student != null && librarian != null) {
+            return new Loan(book, student, librarian, loanDate, dueDate, returnDate);
+        } else {
+            System.out.println("Error: Couldn't find matching book, student, or librarian.");
+            return null;
+        }
+    }
+
+    public ArrayList<Loan> loadLoans(
+            String fileName,
+            ArrayList<Book> books,
+            ArrayList<Student> students,
+            ArrayList<Librarian> librarians) {
+
+        ArrayList<Loan> loans = new ArrayList<>();
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Loan loan = fromStringLoans(line, books, students, librarians);
+                if (loan != null) {
+                    loans.add(loan);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return loans;
+    }
 }
+
 
 class Book {
     private String title;
     private String author;
     private int pages;
     private int publishedYear;
+    private boolean isLoaned;
+    private int loanCount;
 
     Book(String title, String author, int pages, int publishedDate) {
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.publishedYear = publishedDate;
+        this.isLoaned = false;
+        this.loanCount = 0;
+
     }
 
-    void setTitle(String title) {
+    Book(String title, String author, int pages, int publishedDate, Boolean isLoaned, int loanCount) {
         this.title = title;
-    }
-
-    void setAuthor(String author) {
         this.author = author;
-    }
-
-    void setPages(int pages) {
         this.pages = pages;
-    }
-
-    void setPublishedYear(int publishedYear) {
-        this.publishedYear = publishedYear;
+        this.publishedYear = publishedDate;
+        this.isLoaned = isLoaned;
+        this.loanCount = loanCount;
     }
 
     public String getTitle() {
@@ -321,21 +413,37 @@ class Book {
         return publishedYear;
     }
 
+    public Boolean getIsLoaned() {
+        return isLoaned;
+    }
+
+    public int getLoanCount() {
+        return loanCount;
+    }
+
+    public void setLoanCount(int loanCount) {
+        this.loanCount = loanCount++;
+    }
+
+    public void setIsLoaned(Boolean isLoaned) {
+        this.isLoaned = isLoaned;
+    }
+
 
     public String toStringBook() {
 
-        return getTitle() + "," + getAuthor() + "," + getPages() + "," + getPublishedYear();
+        return getTitle() + "," + getAuthor() + "," + getPages() + "," + getPublishedYear() + "," + getIsLoaned() + "," + getLoanCount();
     }
 
 
 }
 
 class Student {
-    private String firstName;
-    private String lastName;
-    private String studentId;
-    private String major;
-    private LocalDate membershipDate;
+    private final String firstName;
+    private final String lastName;
+    private final String studentId;
+    private final String major;
+    private final LocalDate membershipDate;
 
     Student(String firstName, String lastName, String studentId, String major, LocalDate membershipDate) {
         this.firstName = firstName;
@@ -383,6 +491,16 @@ class Loan {
     private LocalDateTime dueDate;
     private LocalDateTime returnDate;
 
+    Loan(Book book, Student student, Librarian librarian, LocalDateTime loanDate, LocalDateTime dueDate) {
+        this.book = book;
+        this.student = student;
+        this.librarian = librarian;
+        this.loanDate = loanDate;
+        this.dueDate = dueDate;
+        this.returnDate = null;
+
+    }
+
     Loan(Book book, Student student, Librarian librarian, LocalDateTime loanDate, LocalDateTime dueDate, LocalDateTime returnDate) {
         this.book = book;
         this.student = student;
@@ -401,6 +519,10 @@ class Loan {
         return student;
     }
 
+    public Librarian getLibrarian() {
+        return librarian;
+    }
+
     public LocalDateTime getLoanDate() {
         return loanDate;
     }
@@ -412,6 +534,55 @@ class Loan {
     public LocalDateTime getReturnDate() {
         return returnDate;
     }
+
+    void setReturnDate(LocalDateTime returnDate) {
+        this.returnDate = returnDate;
+    }
+
+    boolean isReturned() {
+        return returnDate != null;
+    }
+
+    String toStringLoans() {
+        return book.getTitle() + "," + student.getStudentId() + "," + librarian.getEmployeeId() + "," + loanDate.toString() + "," + dueDate.toString() + "," + returnDate.toString();
+    }
+
+
+}
+
+class LoanRequest {
+    private Book book;
+    private Student student;
+    private Librarian assignedLibrarian;
+    private Boolean isApproved;
+
+    LoanRequest(Book book, Student student, Librarian assignedLibrarian) {
+        this.book = book;
+        this.student = student;
+        this.assignedLibrarian = assignedLibrarian;
+        this.isApproved = false;
+    }
+
+    void approve() {
+        isApproved = true;
+    }
+
+    Student getStudent() {
+        return student;
+    }
+
+    Book getBook() {
+        return book;
+    }
+
+    Librarian getAssignedLibrarian() {
+        return assignedLibrarian;
+    }
+
+    boolean isApproved() {
+        return isApproved;
+    }
+
 
 }
 
@@ -487,15 +658,14 @@ class Manager {
 }
 
 class Menu {
-    private Scanner scan;
+    private final Scanner scan;
 
     Menu() {
         scan = new Scanner(System.in);
     }
 
     void showMainMenu() {
-        System.out.println("Welcome to the Library!\n");
-        System.out.println("1. Student menu ");
+        System.out.println("\n1. Student menu ");
         System.out.println("2. Librarian menu");
         System.out.println("3. Manager menu");
         System.out.println("4. Exit");
@@ -540,11 +710,11 @@ class Menu {
 }
 
 class Library {
-    private String libraryName;
-    private ArrayList<Book> books;
-    private ArrayList<Student> students;
-    private ArrayList<Librarian> librarian;
-    private ArrayList<Loan> loans;
+    private final String libraryName;
+    private final ArrayList<Book> books;
+    private final ArrayList<Student> students;
+    private final ArrayList<Librarian> librarian;
+    private final ArrayList<Loan> loans;
 
     Library(String libraryName, ArrayList<Book> books, ArrayList<Student> students, ArrayList<Librarian> librarians, ArrayList<Loan> loans) {
         this.libraryName = libraryName;
@@ -556,16 +726,19 @@ class Library {
 
 
     void bookList() {
+
         for (Book book : books) {
-            System.out.println("\nBook title: " + book.getTitle() +
-                    "\nBook author: " + book.getAuthor() +
-                    "\nBook published year: " + book.getPublishedYear() +
-                    "\nBook pages: " + book.getPages() + "\n");
+            if (book.getIsLoaned() == false) {
+                System.out.println("\nBook title: " + book.getTitle() +
+                        "\nBook author: " + book.getAuthor() +
+                        "\nBook published year: " + book.getPublishedYear() +
+                        "\nBook pages: " + book.getPages() + "\n______________________");
+            }
         }
     }
 
-    void studentList() {
-        for (Student student : students) {
+    void studentList(Student student) {
+        for (Student students : students) {
             System.out.println("\nStudent first name:" + student.getFirstName() +
                     "\nStudent last name: " + student.getLastName() +
                     "\nStudent ID: " + student.getStudentId() +
@@ -599,7 +772,7 @@ class Library {
 }
 
 class DataProcessor {
-    private Scanner scanner;
+    private final Scanner scanner;
 
     DataProcessor(Scanner scanner) {
         this.scanner = scanner;
@@ -643,70 +816,153 @@ class DataProcessor {
     }
 
     Student searchStudentById(ArrayList<Student> students, Scanner scanner) {
-        Student foundStudent = null;
-        System.out.println("\nEnter your student ID: ");
+        System.out.println("\nEnter your student ID");
 
-        while (foundStudent == null) {
+        while (true) {
             String studentId = scanner.nextLine();
-            boolean found = false;
+
+            if (studentId.equalsIgnoreCase("exit")) {
+                return null;
+            }
 
             for (Student student : students) {
                 if (student.getStudentId().equals(studentId)) {
-                    foundStudent = student;
-                    found = true;
-                    break;
+                    return student;
                 }
             }
-            if (!found) {
-                System.out.println("\nStudent ID does not match\n Please try again");
-            }
+
+            System.out.println("\nStudent ID not found. Please try again or type 'exit' to cancel.");
         }
-        return foundStudent;
     }
 
+
     Book searchBookByTitle(ArrayList<Book> books, Scanner scanner) {
-        Book foundBook = null;
+
         System.out.println("\nEnter the book title to search: ");
 
-        while (foundBook == null) {
+        while (true) {
             String bookTitle = scanner.nextLine();
-            boolean found = false;
+
+            if (bookTitle.equalsIgnoreCase("exit")) {
+                return null;
+            }
 
             for (Book book : books) {
                 if (book.getTitle().equalsIgnoreCase(bookTitle)) {
-                    foundBook = book;
-                    found = true;
-                    break;
-
+                    return book;
                 }
             }
-            if (!found) {
-                System.out.println("\nThere is not a book with title " + bookTitle + "\n Please try again");
-            }
+
+            System.out.println("\nThere is not a book with title " + bookTitle + "\n Please try again");
         }
-        return foundBook;
     }
 
     Librarian searchLibrarianByEmployeeId(ArrayList<Librarian> librarians, Scanner scanner) {
-        Librarian foundLibrarian = null;
-        System.out.println("\nEnter your Employee ID: ");
 
-        while (foundLibrarian == null) {
+        System.out.println("\nEnter your Employee ID: ");
+        while (true) {
             String employeeId = scanner.nextLine();
-            boolean found = false;
+
+            if (employeeId.equalsIgnoreCase("exit")) {
+                return null;
+            }
+
 
             for (Librarian librarian : librarians) {
                 if (librarian.getEmployeeId().equals(employeeId)) {
-                    foundLibrarian = librarian;
-                    found = true;
-                    break;
+                    return librarian;
                 }
             }
-            if (!found) {
-                System.out.println("\nThere is not any librarian with employeeId " + employeeId + "\n Please try again");
+
+            System.out.println("\nThere is not any librarian with employeeId " + employeeId + "\n Please try again or type 'exit' to cancel.");
+        }
+    }
+
+
+    String chooseBookLoanAndRequest(Student student, ArrayList<Book> books, ArrayList<Librarian> librarians, ArrayList<LoanRequest> loanRequests, Scanner scanner) {
+        ArrayList<Book> availableBooks = new ArrayList<>();
+
+
+        for (Book book : books) {
+            if (book.getIsLoaned() == false) {
+                availableBooks.add(book);
             }
         }
-        return foundLibrarian;
+
+
+        if (availableBooks.isEmpty()) {
+            System.out.println("No books are available to borrow at the moment.");
+            return null;
+        }
+
+        System.out.println("Available books:");
+        for (Book book : availableBooks) {
+            System.out.println("- " + book.getTitle());
+        }
+
+        while (true) {
+            System.out.println("Enter the title of the book you want to borrow (or type 'exit' to cancel):");
+            String input = scanner.nextLine();
+
+            if (input.equalsIgnoreCase("exit")) {
+                System.out.println("Loan request cancelled.");
+                return null;
+            }
+
+            for (Book book : availableBooks) {
+                if (book.getTitle().equalsIgnoreCase(input)) {
+
+                    Librarian assignedLibrarian = getRandomLibrarian(librarians);
+
+                    LoanRequest request = new LoanRequest(book, student, assignedLibrarian);
+                    loanRequests.add(request);
+
+                    System.out.println("Your loan request has been sent to librarian: " + assignedLibrarian.getFirstName() + " " + assignedLibrarian.getLastName());
+
+                    return assignedLibrarian.getEmployeeId();
+                }
+            }
+
+
+            System.out.println("Book not found in available list. Please try again.");
+        }
+    }
+
+
+    Librarian getRandomLibrarian(ArrayList<Librarian> librarians) {
+        Random random = new Random();
+        int index = random.nextInt(librarians.size());
+        return librarians.get(index);
+    }
+
+
+    public void handleRequestsForLibrarian(ArrayList<LoanRequest> loanRequests, ArrayList<Loan> loans, Scanner scanner) {
+        System.out.println("Enter your librarian ID:");
+        String id = scanner.nextLine();
+
+        Iterator<LoanRequest> iterator = loanRequests.iterator();
+
+        while (iterator.hasNext()) {
+            LoanRequest req = iterator.next();
+            if (req.getAssignedLibrarian().getEmployeeId().equals(id)) {
+                System.out.println("Request from student " + req.getStudent().getFirstName() + " " + req.getStudent().getLastName() + " for book " + req.getBook().getTitle());
+                System.out.println("Approve this request? (yes/no)");
+                String choice = scanner.nextLine();
+
+                if (choice.equalsIgnoreCase("yes")) {
+                    req.getBook().setIsLoaned(true);
+                    LocalDateTime now = LocalDateTime.now();
+                    Loan loan = new Loan(req.getBook(), req.getStudent(), req.getAssignedLibrarian(), now, now.plusDays(14), null);
+                    loans.add(loan);
+                    System.out.println("Loan approved.");
+                } else {
+                    System.out.println("Loan request denied.");
+                }
+                iterator.remove();
+
+            } else
+                System.out.println("Emplyee Id is not valid.");
+        }
     }
 
 
@@ -717,12 +973,14 @@ class DataProcessor {
         System.out.println("Your new employee id is: " + newId);
     }
 
+
     void printBookInfo(Book book) {
         System.out.println("\nBook title: " + book.getTitle());
         System.out.println("Book author: " + book.getAuthor());
         System.out.println("Book published year: " + book.getPublishedYear());
         System.out.println("Book pages: " + book.getPages());
     }
+
 
     void printStudentInfo(Student student) {
         System.out.println("\nStudent first name: " + student.getFirstName());
@@ -732,11 +990,13 @@ class DataProcessor {
         System.out.println("Student membership date: " + student.getMembershipDate());
     }
 
+
     void printLibrarianInfo(Librarian librarian) {
         System.out.println("\nLibrarian first name: " + librarian.getFirstName());
         System.out.println("Librarian last name: " + librarian.getLastName());
         System.out.println("Librarian employee ID: " + librarian.getEmployeeId());
     }
+
 
     void notImplementedYet() {
         System.out.println("\nSorry");
@@ -744,6 +1004,3 @@ class DataProcessor {
     }
 
 }
-
-
-
