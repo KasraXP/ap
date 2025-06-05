@@ -26,13 +26,13 @@ public class DomainHtmlScraper {
     }
 
     public void start() throws IOException {
-        // ایجاد دایرکتوری تصاویر (اگر لازم بود)
+        
         exercises.ex6.utils.DirectoryTools.createDirectory("fetched_images");
 
-        // فایل خروجی برای ذخیره لینک تصاویر
+        
         try (PrintWriter imageLinksWriter = new PrintWriter("fetched_images/image_links.txt")) {
 
-            // شروع از صفحه اصلی
+            
             List<String> htmlLines = HtmlFetcher.fetchHtml(domainAddress);
             this.htmlFileManager.save(htmlLines);
             visitedUrls.add(domainAddress);
@@ -46,7 +46,7 @@ public class DomainHtmlScraper {
                 String url = queue.poll();
 
                 if (visitedUrls.contains(url)) {
-                    continue; // جلوگیری از دانلود تکراری صفحات
+                    continue;
                 }
 
                 try {
@@ -57,7 +57,7 @@ public class DomainHtmlScraper {
                     urls = HtmlParser.getAllUrlsFromList(htmlLines);
                     addUrlsToQueue(urls);
 
-                    // استخراج و ذخیره لینک تصاویر
+                   
                     for (String extractedUrl : urls) {
                         if (isImageUrl(extractedUrl) && !visitedImages.contains(extractedUrl)) {
                             visitedImages.add(extractedUrl);
