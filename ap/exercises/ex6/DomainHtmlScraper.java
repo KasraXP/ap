@@ -3,96 +3,82 @@ package exercises.ex6;
 import exercises.ex6.fetcher.HtmlFetcher;
 import exercises.ex6.parser.HtmlParser;
 import exercises.ex6.store.HtmlFileManager;
-
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URL;
 import java.util.*;
 
 public class DomainHtmlScraper {
 
-    private String domainAddress;
-    private Queue<String> queue;
-    private HtmlFileManager htmlFileManager;
-    private Set<String> visitedUrls;
-    private Set<String> visitedImages;
-    private static final List<String> IMAGE_EXTENSIONS = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg");
+    private final String domain;
+    private final String domainHost;
+    private final HtmlFileManager htmlFileManager;
+    private final Queue<String> queue = new LinkedList<>();
+    private final Set<String> visitedUrls = new HashSet<>();
 
-    public DomainHtmlScraper(String domainAddress, String savePath) {
-        this.domainAddress = domainAddress;
-        this.queue = new LinkedList<>();
-        this.htmlFileManager = new HtmlFileManager(savePath);
-        this.visitedUrls = new HashSet<>();
-        this.visitedImages = new HashSet<>();
+    public DomainHtmlScraper(String domain, String saveDirectory) throws IOException {
+        this.domain = domain;
+        this.domainHost = new URL(domain).getHost();
+        this.htmlFileManager = new HtmlFileManager();
     }
 
-    public void start() throws IOException {
-        // ایجاد دایرکتوری تصاویر (اگر لازم بود)
-        exercises.ex6.utils.DirectoryTools.createDirectory("fetched_images");
+    public void start() {
+        queue.add(domain);
+        int counter = 0;
 
-        // فایل خروجی برای ذخیره لینک تصاویر
-        try (PrintWriter imageLinksWriter = new PrintWriter("fetched_images/image_links.txt")) {
+        while (!queue.isEmpty()) {
+            String currentUrl = queue.poll();
 
-            // شروع از صفحه اصلی
-            List<String> htmlLines = HtmlFetcher.fetchHtml(domainAddress);
-            this.htmlFileManager.save(htmlLines);
-            visitedUrls.add(domainAddress);
+            if (visitedUrls.contains(currentUrl)) continue;
 
-            List<String> urls = HtmlParser.getAllUrlsFromList(htmlLines);
-            addUrlsToQueue(urls);
+            try {
+                List<String> htmlLines = HtmlFetcher.fetchHtml(currentUrl);
+                visitedUrls.add(currentUrl);
+                counter++;
 
-            int counter = 1;
+                String relativePath = getSavePathFromUrl(currentUrl);
+                htmlFileManager.save( relativePath,htmlLines);
 
-            while (!queue.isEmpty()) {
-                String url = queue.poll();
+                List<String> foundUrls = HtmlParser.getAllUrlsFromList(htmlLines);
 
-                if (visitedUrls.contains(url)) {
-                    continue; // جلوگیری از دانلود تکراری صفحات
-                }
-
-                try {
-                    htmlLines = HtmlFetcher.fetchHtml(url);
-                    this.htmlFileManager.save(htmlLines);
-                    visitedUrls.add(url);
-
-                    urls = HtmlParser.getAllUrlsFromList(htmlLines);
-                    addUrlsToQueue(urls);
-
-                    // استخراج و ذخیره لینک تصاویر
-                    for (String extractedUrl : urls) {
-                        if (isImageUrl(extractedUrl) && !visitedImages.contains(extractedUrl)) {
-                            visitedImages.add(extractedUrl);
-                            imageLinksWriter.println(extractedUrl);
+                for (String url : foundUrls) {
+                    try {
+                        URL u = new URL(url);
+                        if (u.getHost().endsWith(domainHost) && !visitedUrls.contains(url)) {
+                            queue.add(url);
                         }
+                    } catch (Exception ignored) {
+
                     }
-
-                    System.out.println("[" + counter + "] " + url + " fetched and saved (queue size: " + queue.size() + ").");
-                    counter++;
-
-                } catch (Exception e) {
-                    System.out.println("ERROR fetching " + url + ": " + e.getMessage());
                 }
-            }
 
-            System.out.println("Operation complete.");
+                System.out.println("[" + counter + "] Saved: " + currentUrl);
+
+            } catch (Exception e) {
+                System.err.println("ERROR: " + currentUrl + " -> " + e.getMessage());
+            }
         }
+
+        System.out.println("Scraping completed. Total pages saved: " + counter);
     }
 
-    private void addUrlsToQueue(List<String> urls) {
-        for (String url : urls) {
-            if (url != null && !visitedUrls.contains(url)) {
-                queue.add(url);
-            }
-        }
-    }
+    private String getSavePathFromUrl(String urlStr) {
+        try {
+            URL url = new URL(urlStr);
+            String host = url.getHost();
+            String path = url.getPath();
 
-    private boolean isImageUrl(String url) {
-        if (url == null) return false;
-        String lowerUrl = url.toLowerCase();
-        for (String ext : IMAGE_EXTENSIONS) {
-            if (lowerUrl.endsWith(ext)) {
-                return true;
+            if (path.endsWith("/")) path += "index.html";
+            if (path.equals("")) path = "/index.html";
+
+            String folder = "";
+            if (!host.equals(domainHost)) {
+                String sub = host.replace("." + domainHost, "");
+                folder = "_" + sub;
             }
+
+            return (folder + path).replaceAll("^/+", "");
+        } catch (Exception e) {
+            return "unknown_page_" + System.currentTimeMillis() + ".html";
         }
-        return false;
     }
 }
