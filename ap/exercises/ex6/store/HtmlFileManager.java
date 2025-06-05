@@ -8,23 +8,25 @@ import java.nio.file.Paths;
 import java.util.List;
 
 public class HtmlFileManager {
+    private final String baseDir;
 
-    public HtmlFileManager() {
-
+    public HtmlFileManager(String baseDir) {
+        this.baseDir = baseDir;
+        DirectoryTools.createDirectory(baseDir);
     }
 
-    public void save(String saveFilePath, List<String> lines) {
+    public void save(String relativePath, List<String> lines) {
         try {
-            Path path = Paths.get(saveFilePath);
-            DirectoryTools.createDirectory(path.getParent().toString());
+            Path fullPath = Paths.get(baseDir, relativePath);
+            DirectoryTools.createDirectory(fullPath.getParent().toString());
 
-            PrintWriter out = new PrintWriter(saveFilePath);
-            for (String line : lines) {
-                out.println(line);
+            try (PrintWriter out = new PrintWriter(fullPath.toFile())) {
+                for (String line : lines) {
+                    out.println(line);
+                }
             }
-            out.close();
 
-            System.out.println("Saved: " + saveFilePath);
+            System.out.println("Saved: " + fullPath);
         } catch (Exception e) {
             System.out.println("Save failed: " + e.getMessage());
         }

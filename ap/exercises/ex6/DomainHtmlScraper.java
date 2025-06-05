@@ -18,7 +18,7 @@ public class DomainHtmlScraper {
     public DomainHtmlScraper(String domain, String saveDirectory) throws IOException {
         this.domain = domain;
         this.domainHost = new URL(domain).getHost();
-        this.htmlFileManager = new HtmlFileManager();
+        this.htmlFileManager = new HtmlFileManager(saveDirectory);
     }
 
     public void start() {
