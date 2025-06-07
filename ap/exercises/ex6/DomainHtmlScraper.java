@@ -17,7 +17,8 @@ public class DomainHtmlScraper {
     private final HtmlFileManager htmlFileManager;
     private final Queue<String> queue = new LinkedList<>();
     private final Set<String> visitedUrls = new HashSet<>();
-    private final Set<String> visitedImages = new HashSet<>();
+    private final Set<String> downloadedImages = new HashSet<>();
+    private final Set<String> downloadedSongs = new HashSet<>();
 
     public DomainHtmlScraper(String domain, String saveDirectory) throws IOException {
         this.domain = domain;
@@ -26,9 +27,12 @@ public class DomainHtmlScraper {
     }
 
     public void start() throws IOException {
-        DirectoryTools.createDirectory("fetched_images");
 
-        try (PrintWriter imageLinksWriter = new PrintWriter("fetched_images/image_links.txt")) {
+        DirectoryTools.createDirectory("fetched_images");
+        DirectoryTools.createDirectory("fetched_music");
+
+        try (PrintWriter imageLinksWriter = new PrintWriter("fetched_images/image_links.txt");
+             PrintWriter songLinksWriter = new PrintWriter("fetched_music/song_links.txt")) {
 
             queue.add(domain);
             int counter = 0;
@@ -39,6 +43,8 @@ public class DomainHtmlScraper {
                 if (visitedUrls.contains(currentUrl)) continue;
 
                 try {
+                    Thread.sleep(Conf.K_SECONDS_DELAY * 1000L);
+
                     List<String> htmlLines = HtmlFetcher.fetchHtml(currentUrl);
                     visitedUrls.add(currentUrl);
                     counter++;
@@ -52,13 +58,20 @@ public class DomainHtmlScraper {
                         try {
                             URL u = new URL(url);
 
-                            if (isUrlInDomain(u) && !visitedUrls.contains(url)) {
+                            if (u.getHost().endsWith(domainHost) && !visitedUrls.contains(url)) {
                                 queue.add(url);
                             }
 
-                            if (isImageUrl(url) && !visitedImages.contains(url)) {
-                                visitedImages.add(url);
+                            if (isImageUrl(url) && !downloadedImages.contains(url)) {
+                                downloadedImages.add(url);
                                 imageLinksWriter.println(url);
+                                imageLinksWriter.flush();
+                            }
+
+                            if (isAudioUrl(url) && !downloadedSongs.contains(url)) {
+                                downloadedSongs.add(url);
+                                songLinksWriter.println(url);
+                                songLinksWriter.flush();
                             }
 
                         } catch (Exception ignored) {
@@ -71,20 +84,14 @@ public class DomainHtmlScraper {
                     System.err.println("ERROR: " + currentUrl + " -> " + e.getMessage());
                 }
             }
+
             System.out.println("Scraping completed. Total pages saved: " + counter);
+            System.out.println("Total images: " + downloadedImages.size());
+            System.out.println("Total songs: " + downloadedSongs.size());
+
+        } catch (Exception e) {
+            System.err.println("Global error: " + e.getMessage());
         }
-    }
-
-    private boolean isUrlInDomain(URL url) {
-        String host = url.getHost();
-        return host.equals(domainHost) || host.endsWith("." + domainHost);
-    }
-
-    private boolean isImageUrl(String url) {
-        String lower = url.toLowerCase();
-        return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg")
-                || lower.endsWith(".gif") || lower.endsWith(".bmp") || lower.endsWith(".svg")
-                || lower.endsWith(".webp");
     }
 
     private String getSavePathFromUrl(String urlStr) {
@@ -97,7 +104,6 @@ public class DomainHtmlScraper {
             if (path.equals("")) path = "/index.html";
 
             String folder = "";
-
             if (!host.equals(domainHost)) {
                 String sub = host.replace("." + domainHost, "");
                 folder = "_" + sub;
@@ -107,5 +113,13 @@ public class DomainHtmlScraper {
         } catch (Exception e) {
             return "unknown_page_" + System.currentTimeMillis() + ".html";
         }
+    }
+
+    private boolean isImageUrl(String url) {
+        return url.matches("(?i).+\\.(png|jpg|jpeg|gif|bmp|webp)$");
+    }
+
+    private boolean isAudioUrl(String url) {
+        return url.matches("(?i).+\\.(mp3|wav|ogg|aac|flac)$");
     }
 }

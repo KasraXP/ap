@@ -6,4 +6,6 @@ public class Conf {
 
     public static final String SAVE_DIRECTORY = "fetched_html";
 
+    public static final int K_SECONDS_DELAY = 2;
+
 }
