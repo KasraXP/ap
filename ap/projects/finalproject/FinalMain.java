@@ -10,6 +10,7 @@ class FinalMain {
 
         Scanner input = new Scanner(System.in);
         DataProcessor processor = new DataProcessor(input);
+        Guest guest = new Guest();
         processor.creatingEmptyFiles();
         LoadFromFile loadFromFile = new LoadFromFile();
         SaveToFile saveToFile = new SaveToFile();
@@ -26,6 +27,7 @@ class FinalMain {
             switch (menu.getOption()) {
 
                 case 1:
+
                     boolean studentRunning = true;
                     while (studentRunning) {
                         menu.studentFirstMenu();
@@ -45,9 +47,41 @@ class FinalMain {
                                     library.printStudentInfo(student);
                                 break;
 
+                            case 3:
+                                System.out.println("Exiting...");
+                                studentRunning = false;
+                                break;
+
                             default:
                                 System.out.println("Invalid option");
                         }
+                    }
+                    break;
+
+                case 2:
+                case 3:
+                    System.out.println("Not implemented yet");
+                    break;
+
+
+                case 4:
+
+                    Boolean guestRunning = true;
+                    while (guestRunning) {
+                        menu.guestMenu();
+                        switch (menu.getOption()) {
+
+                            case 1:
+                                guest.printTheNumberOfStudents(students);
+                                break;
+
+                            case 2:
+                                System.out.println("Exiting...");
+                                guestRunning = false;
+                                break;
+                        }
+
+
                     }
             }
         }
@@ -210,6 +244,18 @@ class Library {
     }
 }
 
+class Guest {
+
+    void printTheNumberOfStudents(ArrayList<Student> students) {
+        if (students.isEmpty()) {
+            System.out.println("\nThere are no students in the database");
+        } else if (students.size() == 1) {
+            System.out.println("\nThere is one student in the database");
+        } else
+            System.out.println("\nThere are " + students.size() + " students in the database");
+    }
+}
+
 
 class SaveToFile {
 
@@ -316,13 +362,21 @@ class Menu {
         System.out.println("\n1. Student menu ");
         System.out.println("2. Librarian menu");
         System.out.println("3. Manager menu");
-        System.out.println("4. Exit");
+        System.out.println("4. Guest menu");
+        System.out.println("5. Exit");
+    }
+
+    void guestMenu() {
+        System.out.println("\n====Guest Menu====");
+        System.out.println("1. Show the number of students");
+        System.out.println("2. Exit");
     }
 
     void studentFirstMenu() {
         System.out.println("\n====Student Menu====");
         System.out.println("1. Register to Library ");
         System.out.println("2. Login to Library ");
+        System.out.println("3. Exit");
     }
 
     void studentSecondMenu() {
