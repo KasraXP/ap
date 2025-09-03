@@ -9,13 +9,15 @@ class FinalMain {
     public static void main(String[] args) {
 
         Scanner input = new Scanner(System.in);
+        Library library = new Library();
+        Manager manager = new Manager();
         DataProcessor processor = new DataProcessor(input);
         Guest guest = new Guest();
         processor.creatingEmptyFiles();
         LoadFromFile loadFromFile = new LoadFromFile();
         SaveToFile saveToFile = new SaveToFile();
         ArrayList<Student> students = loadFromFile.loadStudents("Students.txt.file");
-        Library library = new Library("Central");
+        ArrayList<Librarian> librarians = loadFromFile.loadLibrarians("Librarians.txt.file");
 
 
         Menu menu = new Menu();
@@ -39,7 +41,7 @@ class FinalMain {
                                 break;
 
                             case 2:
-                                Student student = library.searchStudentById(students, input);
+                                Student student = library.studentVerification(students, input);
                                 if (student == null) {
                                     studentRunning = false;
                                     break;
@@ -59,14 +61,41 @@ class FinalMain {
                     break;
 
                 case 2:
-                case 3:
                     System.out.println("Not implemented yet");
+                    break;
+
+
+                case 3:
+                    boolean managerRunning = manager.managerVerification(input);
+                    if (!managerRunning) {
+                        break;
+                    }
+
+
+                    while (managerRunning) {
+                        menu.ManagerMenu();
+                        switch (menu.getOption()) {
+
+                            case 1:
+                                librarians.add(processor.addLibrarian());
+                                saveToFile.saveLibrarian(librarians);
+                                break;
+
+                            case 2:
+                                System.out.println("Exiting...");
+                                managerRunning = false;
+                                break;
+
+
+                        }
+
+                    }
                     break;
 
 
                 case 4:
 
-                    Boolean guestRunning = true;
+                    boolean guestRunning = true;
                     while (guestRunning) {
                         menu.guestMenu();
                         switch (menu.getOption()) {
@@ -76,9 +105,12 @@ class FinalMain {
                                 break;
 
                             case 2:
+
+                            case 3:
                                 System.out.println("Exiting...");
                                 guestRunning = false;
                                 break;
+
                         }
 
 
@@ -89,32 +121,25 @@ class FinalMain {
 }
 
 class Student {
-    private final String firstName;
-    private final String lastName;
-    private final String studentId;
+    private final String userName;
+    private final String password;
     private final String major;
     private final LocalDate membershipDate;
 
-    Student(String firstName, String lastName, String studentId, String major, LocalDate membershipDate) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.studentId = studentId;
+    Student(String userName, String password, String major, LocalDate membershipDate) {
+        this.userName = userName;
+        this.password = password;
         this.major = major;
         this.membershipDate = membershipDate;
 
     }
 
-
-    String getFirstName() {
-        return firstName;
+    String getUserName() {
+        return userName;
     }
 
-    String getLastName() {
-        return lastName;
-    }
-
-    String getStudentId() {
-        return studentId;
+    String getPassword() {
+        return password;
     }
 
     String getMajor() {
@@ -127,8 +152,77 @@ class Student {
 
     public String toStringStudent() {
 
-        return getFirstName() + "," + getLastName() + "," + getStudentId() + "," + getMajor() + "," + getMembershipDate();
+        return getUserName() + "," + getPassword()+ "," + getMajor() + "," + getMembershipDate();
     }
+}
+
+class Librarian {
+    private final String fullName;
+    private String password;
+
+    Librarian(String fullName, String password) {
+        this.fullName = fullName;
+        this.password = password;
+    }
+
+    String getFullName() {
+        return fullName;
+    }
+
+    void password(String newPassword) {
+        this.password= newPassword;
+    }
+
+    String getPassword() {
+        return password;
+    }
+
+    String toStringLibrarian() {
+        return getFullName() + "," + getPassword();
+    }
+
+}
+
+class Manager {
+    private final String name;
+    private final String password;
+
+    Manager() {
+        name = "TheOwner";
+        password = "1234567890";
+    }
+
+    Boolean managerVerification(Scanner scanner) {
+
+        while (true) {
+
+            String managerName = null;
+            String managerPassword;
+
+
+            System.out.println("Enter your username: ");
+            managerName = scanner.nextLine();
+
+            if (managerName != null && managerName.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting...");
+                return false;
+            }
+
+            System.out.println("Enter your password: ");
+            managerPassword = scanner.nextLine();
+
+            if (managerName.equals(name) && managerPassword.equals(password)) {
+                System.out.println("Manager verified");
+                return true;
+            } else {
+                System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
+
+            }
+
+        }
+
+    }
+
 }
 
 class Book {
@@ -201,14 +295,13 @@ class Book {
 class Library {
     private final String libraryName;
 
-    Library(String libraryName) {
-        this.libraryName = libraryName;
+    Library() {
+        this.libraryName = "Central";
     }
 
     void printStudentInfo(Student student) {
-        System.out.println("\nStudent first name: " + student.getFirstName());
-        System.out.println("Student last name: " + student.getLastName());
-        System.out.println("Student ID: " + student.getStudentId());
+        System.out.println("\nStudent username: " + student.getUserName());
+        System.out.println("Student password: " + student.getPassword());
         System.out.println("Student major: " + student.getMajor());
         System.out.println("Student membership date: " + student.getMembershipDate());
     }
@@ -217,29 +310,77 @@ class Library {
         return libraryName;
     }
 
-    Student searchStudentById(ArrayList<Student> students, Scanner scanner) {
+    Student studentVerification(ArrayList<Student> students, Scanner scanner) {
 
-        if (students.isEmpty()) {
-            System.out.println("\nThere is no student in the database");
-            return null;
-        }
-
-        System.out.println("\nEnter your student ID");
+        boolean isThereOurStudent = false;
 
         while (true) {
 
-            String studentId = scanner.nextLine();
-            if (studentId.equalsIgnoreCase("exit")) {
+            String studentUserName = null;
+            String studentPassword;
+
+
+            System.out.println("Enter your username: ");
+            studentUserName = scanner.nextLine();
+
+            if (studentUserName != null && studentUserName.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting...");
                 return null;
             }
 
+            System.out.println("Enter your password: ");
+            studentPassword = scanner.nextLine();
+
+
             for (Student student : students) {
-                if (student.getStudentId().equals(studentId)) {
+                if (student.getPassword().equals(studentPassword) && student.getUserName().equals(studentUserName)) {
+                    System.out.println("Student verified");
+                    isThereOurStudent = true;
                     return student;
                 }
             }
 
-            System.out.println("\nStudent ID not found. Please try again or type 'exit' to cancel.");
+            if (!isThereOurStudent) {
+                System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
+            }
+
+        }
+    }
+
+    Librarian librarianVerification(ArrayList<Librarian> librarians, Scanner scanner) {
+
+
+        boolean isThereOurLibrarian = false;
+
+        while (true) {
+
+            String librarianFullName = null;
+            String librarianPassword;
+
+
+            System.out.println("Enter your username: ");
+            librarianFullName = scanner.nextLine();
+
+            if (librarianFullName != null && librarianFullName.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting...");
+                return null;
+            }
+
+            System.out.println("Enter your password: ");
+            librarianPassword = scanner.nextLine();
+
+
+            for (Librarian librarian : librarians) {
+                if (librarian.getPassword().equals(librarianPassword) && librarian.getFullName().equals(librarianFullName)) {
+                    System.out.println("Student verified");
+                    isThereOurLibrarian = true;
+                    return librarian;
+                }
+            }
+
+            if(!isThereOurLibrarian) {
+                System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
+            }
         }
     }
 }
@@ -256,7 +397,6 @@ class Guest {
     }
 }
 
-
 class SaveToFile {
 
     void saveStudents(ArrayList<Student> students) {
@@ -271,6 +411,18 @@ class SaveToFile {
         }
 
     }
+
+    void saveLibrarian(ArrayList<Librarian> librarians) {
+        try {
+            PrintWriter writer = new PrintWriter("Librarians.txt.file");
+            for (Librarian librarian : librarians) {
+                writer.println(librarian.toStringLibrarian());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error while saving librarians file" + e.getMessage());
+        }
+    }
 }
 
 class LoadFromFile {
@@ -280,12 +432,11 @@ class LoadFromFile {
             return null;
         } else {
             String[] parts = line.split(",");
-            String firstName = parts[0];
-            String lastName = parts[1];
-            String studentId = parts[2];
-            String major = parts[3];
-            LocalDate membershipDate = LocalDate.parse(parts[4]);
-            return new Student(firstName, lastName, studentId, major, membershipDate);
+            String userName = parts[0];
+            String password = parts[1];
+            String major = parts[2];
+            LocalDate membershipDate = LocalDate.parse(parts[3]);
+            return new Student(userName,password, major, membershipDate);
         }
 
     }
@@ -305,6 +456,32 @@ class LoadFromFile {
         return students;
     }
 
+    public Librarian fromStringLibrarian(String line) {
+        if (line.isEmpty()) {
+            return null;
+        } else {
+            String[] parts = line.split(",");
+            String fullName = parts[0];
+            String employeeId = parts[1];
+
+            return new Librarian(fullName, employeeId);
+        }
+    }
+
+    ArrayList<Librarian> loadLibrarians(String fileName) {
+        ArrayList<Librarian> librarians = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader("Librarians.txt.file"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Librarian librarian = fromStringLibrarian(line);
+                librarians.add(librarian);
+            }
+        } catch (IOException e) {
+            System.out.println("Error while loading file " + e.getMessage());
+        }
+        return librarians;
+    }
+
 
 }
 
@@ -316,17 +493,24 @@ class DataProcessor {
     }
 
     Student addStudent() {
-        System.out.println("\nEnter your first name: ");
-        String firstName = scanner.nextLine();
-        System.out.println("Enter your last name: ");
-        String lastName = scanner.nextLine();
-        System.out.println("Enter your student ID: ");
-        String studentId = scanner.nextLine();
+        System.out.println("\nEnter your username name: ");
+        String userName = scanner.nextLine();
+        System.out.println("Enter your password: ");
+        String password = scanner.nextLine();
         System.out.println("Enter your Major: ");
         String major = scanner.nextLine();
         System.out.println("You have been successfully added to the library ");
-        return new Student(firstName, lastName, studentId, major, LocalDate.now());
+        return new Student(userName,password, major, LocalDate.now());
     }
+
+    Librarian addLibrarian() {
+        System.out.println("\nEnter librarian full name: ");
+        String fullName = scanner.nextLine();
+        System.out.println("Enter librarian employee ID: ");
+        String employeeId = scanner.nextLine();
+        return new Librarian(fullName, employeeId);
+    }
+
 
     void creatingEmptyFiles() {
         try {
@@ -390,9 +574,17 @@ class Menu {
         System.out.println("8. Exit");
     }
 
+    void ManagerMenu() {
+        System.out.println("\n====Manager Menu====");
+        System.out.println("1. Add a new Librarian ");
+        System.out.println("2. Exit");
+    }
+
     int getOption() {
         System.out.println("\nEnter your Option: ");
         return scan.nextInt();
     }
 }
+
+
 
