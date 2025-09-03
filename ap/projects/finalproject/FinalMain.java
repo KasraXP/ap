@@ -61,7 +61,17 @@ class FinalMain {
                     break;
 
                 case 2:
-                    System.out.println("Not implemented yet");
+
+                    boolean librarianRunning = true;
+                    while (librarianRunning) {
+                        Librarian librarian = library.librarianVerification(librarians, input);
+                        if (librarian == null) {
+                            librarianRunning = false;
+                            break;
+                        }
+
+
+                    }
                     break;
 
 
@@ -152,7 +162,7 @@ class Student {
 
     public String toStringStudent() {
 
-        return getUserName() + "," + getPassword()+ "," + getMajor() + "," + getMembershipDate();
+        return getUserName() + "," + getPassword() + "," + getMajor() + "," + getMembershipDate();
     }
 }
 
@@ -170,7 +180,7 @@ class Librarian {
     }
 
     void password(String newPassword) {
-        this.password= newPassword;
+        this.password = newPassword;
     }
 
     String getPassword() {
@@ -372,13 +382,13 @@ class Library {
 
             for (Librarian librarian : librarians) {
                 if (librarian.getPassword().equals(librarianPassword) && librarian.getFullName().equals(librarianFullName)) {
-                    System.out.println("Student verified");
+                    System.out.println("Librarian verified");
                     isThereOurLibrarian = true;
                     return librarian;
                 }
             }
 
-            if(!isThereOurLibrarian) {
+            if (!isThereOurLibrarian) {
                 System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
             }
         }
@@ -436,7 +446,7 @@ class LoadFromFile {
             String password = parts[1];
             String major = parts[2];
             LocalDate membershipDate = LocalDate.parse(parts[3]);
-            return new Student(userName,password, major, membershipDate);
+            return new Student(userName, password, major, membershipDate);
         }
 
     }
@@ -500,7 +510,7 @@ class DataProcessor {
         System.out.println("Enter your Major: ");
         String major = scanner.nextLine();
         System.out.println("You have been successfully added to the library ");
-        return new Student(userName,password, major, LocalDate.now());
+        return new Student(userName, password, major, LocalDate.now());
     }
 
     Librarian addLibrarian() {
@@ -572,6 +582,14 @@ class Menu {
         System.out.println("6. Show all books on loan ");
         System.out.println("7. Show student info ");
         System.out.println("8. Exit");
+    }
+
+    void librarianMenu() {
+        System.out.println("\n====Librarian Login====");
+        System.out.println("1. Add new book ");
+        System.out.println("2. Change ID ");
+        System.out.println("3. Loan Requests");
+        System.out.println("4. Exit");
     }
 
     void ManagerMenu() {
