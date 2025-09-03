@@ -18,6 +18,7 @@ class FinalMain {
         SaveToFile saveToFile = new SaveToFile();
         ArrayList<Student> students = loadFromFile.loadStudents("Students.txt.file");
         ArrayList<Librarian> librarians = loadFromFile.loadLibrarians("Librarians.txt.file");
+        ArrayList<Book> books = loadFromFile.loadBooks("Books.txt.file");
 
 
         Menu menu = new Menu();
@@ -76,6 +77,12 @@ class FinalMain {
                                 processor.changeLibrarianPassword(librarian, input);
                                 saveToFile.saveLibrarian(librarians);
                                 break;
+
+                            case 2:
+                                books.add(processor.addBook());
+                                saveToFile.saveBooks(books);
+                                break;
+
                         }
 
 
@@ -324,6 +331,14 @@ class Library {
         System.out.println("Student membership date: " + student.getMembershipDate());
     }
 
+    void printBookInfo(Book book) {
+        System.out.println("\nBook title: " + book.getTitle());
+        System.out.println("Book author: " + book.getAuthor());
+        System.out.println("Book published year: " + book.getPublishedYear());
+        System.out.println("Book pages: " + book.getPages());
+        System.out.println("___________________________");
+    }
+
     String getLibraryName() {
         return libraryName;
     }
@@ -441,6 +456,21 @@ class SaveToFile {
             System.out.println("Error while saving librarians file" + e.getMessage());
         }
     }
+
+    void saveBooks(ArrayList<Book> books) {
+        try {
+            PrintWriter writer = new PrintWriter("Books.txt.file");
+            for (Book book : books) {
+                writer.println(book.toStringBook());
+            }
+            writer.close();
+
+        } catch (IOException e) {
+            System.out.println("Error while saving books file" + e.getMessage());
+
+        }
+    }
+
 }
 
 class LoadFromFile {
@@ -501,6 +531,32 @@ class LoadFromFile {
     }
 
 
+    public Book fromStringBook(String line) {
+        String[] parts = line.split(",");
+        String title = parts[0];
+        String author = parts[1];
+        int pages = Integer.parseInt(parts[2]);
+        int publishedDate = Integer.parseInt(parts[3]);
+        boolean isLoaned = Boolean.parseBoolean(parts[4]);
+        int loanCount = Integer.parseInt(parts[5]);
+        return new Book(title, author, pages, publishedDate, isLoaned, loanCount);
+    }
+
+    public ArrayList<Book> loadBooks(String filename) {
+        ArrayList<Book> books = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Book book = fromStringBook(line);
+                books.add(book);
+            }
+        } catch (IOException e) {
+            System.out.println("Error while loading file" + e.getMessage());
+        }
+
+        return books;
+    }
+
 }
 
 class DataProcessor {
@@ -527,6 +583,18 @@ class DataProcessor {
         System.out.println("Enter librarian employee ID: ");
         String employeeId = scanner.nextLine();
         return new Librarian(fullName, employeeId);
+    }
+
+    Book addBook() {
+        System.out.println("\nEnter book title: ");
+        String title = scanner.nextLine();
+        System.out.println("Enter book author: ");
+        String author = scanner.nextLine();
+        System.out.println("Enter book published year: ");
+        int publishedYear = scanner.nextInt();
+        System.out.println("enter book pages: ");
+        int pages = scanner.nextInt();
+        return new Book(title, author, publishedYear, pages);
     }
 
     void changeLibrarianPassword(Librarian librarian, Scanner scanner) {
