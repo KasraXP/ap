@@ -68,6 +68,14 @@ class FinalMain {
                         if (librarian == null) {
                             librarianRunning = false;
                             break;
+                        } else
+                            menu.librarianMenu();
+                        switch (menu.getOption()) {
+
+                            case 1:
+                                processor.changeLibrarianPassword(librarian, input);
+                                saveToFile.saveLibrarian(librarians);
+                                break;
                         }
 
 
@@ -179,7 +187,7 @@ class Librarian {
         return fullName;
     }
 
-    void password(String newPassword) {
+    void setPassword(String newPassword) {
         this.password = newPassword;
     }
 
@@ -321,7 +329,7 @@ class Library {
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
-
+        System.out.println("====Student verification====");
         boolean isThereOurStudent = false;
 
         while (true) {
@@ -359,7 +367,7 @@ class Library {
 
     Librarian librarianVerification(ArrayList<Librarian> librarians, Scanner scanner) {
 
-
+        System.out.println("====Librarian verification====");
         boolean isThereOurLibrarian = false;
 
         while (true) {
@@ -521,6 +529,13 @@ class DataProcessor {
         return new Librarian(fullName, employeeId);
     }
 
+    void changeLibrarianPassword(Librarian librarian, Scanner scanner) {
+        System.out.println("\nEnter your new password: ");
+        String newPass = scanner.nextLine();
+        librarian.setPassword(newPass);
+        System.out.println("\nYour new password has been changed\nYour new password is " + newPass);
+    }
+
 
     void creatingEmptyFiles() {
         try {
@@ -585,9 +600,9 @@ class Menu {
     }
 
     void librarianMenu() {
-        System.out.println("\n====Librarian Login====");
-        System.out.println("1. Add new book ");
-        System.out.println("2. Change ID ");
+        System.out.println("\n====Librarian Menu====");
+        System.out.println("1. Change password ");
+        System.out.println("2. Add new book ");
         System.out.println("3. Loan Requests");
         System.out.println("4. Exit");
     }
