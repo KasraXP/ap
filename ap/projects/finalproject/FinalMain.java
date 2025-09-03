@@ -64,28 +64,34 @@ class FinalMain {
                 case 2:
 
                     boolean librarianRunning = true;
+                    boolean librarianRunning2 = true;
+
                     while (librarianRunning) {
                         Librarian librarian = library.librarianVerification(librarians, input);
                         if (librarian == null) {
-                            librarianRunning = false;
                             break;
                         } else
-                            menu.librarianMenu();
-                        switch (menu.getOption()) {
+                            while (librarianRunning2) {
+                                menu.librarianMenu();
+                                switch (menu.getOption()) {
 
-                            case 1:
-                                processor.changeLibrarianPassword(librarian, input);
-                                saveToFile.saveLibrarian(librarians);
-                                break;
+                                    case 1:
+                                        processor.changeLibrarianPassword(librarian, input);
+                                        saveToFile.saveLibrarian(librarians);
+                                        break;
 
-                            case 2:
-                                books.add(processor.addBook());
-                                saveToFile.saveBooks(books);
-                                break;
+                                    case 2:
+                                        books.add(processor.addBook());
+                                        saveToFile.saveBooks(books);
+                                        break;
 
-                        }
-
-
+                                    case 3:
+                                        System.out.println("Exiting...");
+                                        librarianRunning2 = false;
+                                        break;
+                                }
+                            }
+                        librarianRunning = false;
                     }
                     break;
 
@@ -95,7 +101,6 @@ class FinalMain {
                     if (!managerRunning) {
                         break;
                     }
-
 
                     while (managerRunning) {
                         menu.ManagerMenu();
@@ -110,10 +115,7 @@ class FinalMain {
                                 System.out.println("Exiting...");
                                 managerRunning = false;
                                 break;
-
-
                         }
-
                     }
                     break;
 
@@ -130,6 +132,8 @@ class FinalMain {
                                 break;
 
                             case 2:
+                                guest.printBookInfo(library.searchBookByTitle(books,input));
+                                break;
 
                             case 3:
                                 System.out.println("Exiting...");
@@ -140,6 +144,11 @@ class FinalMain {
 
 
                     }
+                    break;
+
+                    case 5:
+                        System.out.println("Thank you!");
+                        System.exit(0);
             }
         }
     }
@@ -324,23 +333,15 @@ class Library {
         this.libraryName = "Central";
     }
 
+    String getLibraryName() {
+        return libraryName;
+    }
+
     void printStudentInfo(Student student) {
         System.out.println("\nStudent username: " + student.getUserName());
         System.out.println("Student password: " + student.getPassword());
         System.out.println("Student major: " + student.getMajor());
         System.out.println("Student membership date: " + student.getMembershipDate());
-    }
-
-    void printBookInfo(Book book) {
-        System.out.println("\nBook title: " + book.getTitle());
-        System.out.println("Book author: " + book.getAuthor());
-        System.out.println("Book published year: " + book.getPublishedYear());
-        System.out.println("Book pages: " + book.getPages());
-        System.out.println("___________________________");
-    }
-
-    String getLibraryName() {
-        return libraryName;
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
@@ -416,6 +417,34 @@ class Library {
             }
         }
     }
+
+    Book searchBookByTitle(ArrayList<Book> books, Scanner scanner) {
+
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no book in the database");
+            return null;
+        }
+
+        System.out.println("\nEnter the book title to search: ");
+
+        while (true) {
+            String bookTitle = scanner.nextLine();
+
+            if (bookTitle.equalsIgnoreCase("exit")) {
+                return null;
+            }
+
+            for (Book book : books) {
+                if (book.getTitle().equalsIgnoreCase(bookTitle)) {
+                    return book;
+                }
+            }
+
+            System.out.println("\nThere is not a book with title " + bookTitle + "\n Please try again");
+        }
+    }
+
+
 }
 
 class Guest {
@@ -428,6 +457,16 @@ class Guest {
         } else
             System.out.println("\nThere are " + students.size() + " students in the database");
     }
+
+    void printBookInfo(Book book) {
+        System.out.println("\nBook title: " + book.getTitle());
+        System.out.println("Book author: " + book.getAuthor());
+        System.out.println("Book published year: " + book.getPublishedYear());
+        System.out.println("Book pages: " + book.getPages());
+        System.out.println("___________________________");
+    }
+
+
 }
 
 class SaveToFile {
@@ -646,7 +685,8 @@ class Menu {
     void guestMenu() {
         System.out.println("\n====Guest Menu====");
         System.out.println("1. Show the number of students");
-        System.out.println("2. Exit");
+        System.out.println("2. Search a book by title");
+        System.out.println("3. Exit");
     }
 
     void studentFirstMenu() {
@@ -671,8 +711,7 @@ class Menu {
         System.out.println("\n====Librarian Menu====");
         System.out.println("1. Change password ");
         System.out.println("2. Add new book ");
-        System.out.println("3. Loan Requests");
-        System.out.println("4. Exit");
+        System.out.println("3. Exit");
     }
 
     void ManagerMenu() {
