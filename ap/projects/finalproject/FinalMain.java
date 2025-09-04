@@ -86,6 +86,13 @@ class FinalMain {
                                         break;
 
                                     case 3:
+                                        Book book = library.searchBookByTitle(books, input);
+                                        library.printBookInfo(book);
+                                        processor.chooseAndChangeBookInfo(books, book, input);
+                                        saveToFile.saveBooks(books);
+                                        break;
+
+                                    case 4:
                                         System.out.println("Exiting...");
                                         librarianRunning2 = false;
                                         break;
@@ -132,7 +139,7 @@ class FinalMain {
                                 break;
 
                             case 2:
-                                guest.printBookInfo(library.searchBookByTitle(books,input));
+                                guest.printBookInfoForGuest(library.searchBookByTitle(books, input));
                                 break;
 
                             case 3:
@@ -146,9 +153,9 @@ class FinalMain {
                     }
                     break;
 
-                    case 5:
-                        System.out.println("Thank you!");
-                        System.exit(0);
+                case 5:
+                    System.out.println("Thank you!");
+                    System.exit(0);
             }
         }
     }
@@ -260,10 +267,10 @@ class Manager {
 }
 
 class Book {
-    private final String title;
-    private final String author;
-    private final int pages;
-    private final int publishedYear;
+    private String title;
+    private String author;
+    private int pages;
+    private int publishedYear;
     private boolean isLoaned;
     private int loanCount;
 
@@ -310,16 +317,30 @@ class Book {
         return loanCount;
     }
 
+    public void setNewTitle(String newTitle) {
+        this.title = newTitle;
+    }
+
+    public void setNewAuthor(String newAuthor) {
+        this.author = newAuthor;
+    }
+
+    public void setNewPages(int newPages) {
+        this.pages = newPages;
+    }
+
+    public void setNewPublishedYear(int newPublishedYear) {
+        this.publishedYear = newPublishedYear;
+    }
+
     public void setIsLoaned(Boolean isLoaned) {
         this.isLoaned = isLoaned;
     }
-
 
     public String toStringBook() {
 
         return getTitle() + "," + getAuthor() + "," + getPages() + "," + getPublishedYear() + "," + getIsLoaned() + "," + getLoanCount();
     }
-
 
     public void setLoanCount(int count) {
         this.loanCount = count;
@@ -342,6 +363,17 @@ class Library {
         System.out.println("Student password: " + student.getPassword());
         System.out.println("Student major: " + student.getMajor());
         System.out.println("Student membership date: " + student.getMembershipDate());
+    }
+
+    void printBookInfo(Book book) {
+        if (book == null) {
+            return;
+        }
+        System.out.println("\nBook title: " + book.getTitle());
+        System.out.println("Book author: " + book.getAuthor());
+        System.out.println("Book pages: " + book.getPages());
+        System.out.println("Book published year: " + book.getPublishedYear());
+        System.out.println("___________________________");
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
@@ -444,7 +476,6 @@ class Library {
         }
     }
 
-
 }
 
 class Guest {
@@ -458,7 +489,7 @@ class Guest {
             System.out.println("\nThere are " + students.size() + " students in the database");
     }
 
-    void printBookInfo(Book book) {
+    void printBookInfoForGuest(Book book) {
         System.out.println("\nBook title: " + book.getTitle());
         System.out.println("Book author: " + book.getAuthor());
         System.out.println("Book published year: " + book.getPublishedYear());
@@ -601,8 +632,10 @@ class LoadFromFile {
 class DataProcessor {
     private final Scanner scanner;
 
+
     DataProcessor(Scanner scanner) {
         this.scanner = scanner;
+
     }
 
     Student addStudent() {
@@ -643,6 +676,25 @@ class DataProcessor {
         System.out.println("\nYour new password has been changed\nYour new password is " + newPass);
     }
 
+    void chooseAndChangeBookInfo(ArrayList<Book> books, Book book, Scanner scanner) {
+        if (book == null) {
+            return;
+        }
+        System.out.println("\nEnter new book title: ");
+        String newTitle = scanner.nextLine();
+        book.setNewTitle(newTitle);
+        System.out.println("\nEnter new book author: ");
+        String newAuthor = scanner.nextLine();
+        book.setNewAuthor(newAuthor);
+        System.out.println("\nEnter new book published year: ");
+        int newPublishedYear = scanner.nextInt();
+        book.setNewPublishedYear(newPublishedYear);
+        System.out.println("\nEnter new book pages: ");
+        int newPages = scanner.nextInt();
+        book.setNewPages(newPages);
+        System.out.println("The book information has been changed successfully");
+
+    }
 
     void creatingEmptyFiles() {
         try {
@@ -711,7 +763,8 @@ class Menu {
         System.out.println("\n====Librarian Menu====");
         System.out.println("1. Change password ");
         System.out.println("2. Add new book ");
-        System.out.println("3. Exit");
+        System.out.println("3. Change book info ");
+        System.out.println("4. Exit");
     }
 
     void ManagerMenu() {
