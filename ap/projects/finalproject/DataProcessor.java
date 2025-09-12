@@ -9,10 +9,6 @@ import java.util.Scanner;
 public class DataProcessor {
     private final Scanner scanner;
 
-    public DataProcessor() {
-        scanner = new Scanner(System.in);
-    }
-
 
     DataProcessor(Scanner scanner) {
         this.scanner = scanner;
@@ -20,7 +16,7 @@ public class DataProcessor {
     }
 
     Student addStudent() {
-        System.out.println("\nEnter your username name: ");
+        System.out.println("\nEnter your username: ");
         String userName = scanner.nextLine();
         System.out.println("Enter your password: ");
         String password = scanner.nextLine();
@@ -43,16 +39,16 @@ public class DataProcessor {
         String title = scanner.nextLine();
         System.out.print("Enter book author: ");
         String author = scanner.nextLine();
-        System.out.print("Enter book published year: ");
+        System.out.print("Enter book pages: ");
         int publishedYear = scanner.nextInt();
-        System.out.println("enter book pages: ");
+        System.out.println("enter book published year: ");
         int pages = scanner.nextInt();
-        return new Book(title, author, publishedYear, pages);
+        return new Book(title, author, pages, publishedYear);
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
 
-        System.out.println("====Student verification====");
+        System.out.println("\n====Student verification====");
         while (true) {
             System.out.println("Enter your username: ");
             String studentUserName = scanner.nextLine();
@@ -86,6 +82,11 @@ public class DataProcessor {
 
         System.out.println("====Librarian verification====");
 
+        if (librarians.isEmpty()) {
+            System.out.println("There is no librarian");
+            return null;
+        }
+
         while (true) {
 
             System.out.println("Enter your username: ");
@@ -100,7 +101,7 @@ public class DataProcessor {
             String librarianPassword = scanner.nextLine();
 
             for (Librarian librarian : librarians) {
-                if (librarian.getPassword().equals(librarianPassword) && librarian.getFullName().equals(librarianFullName)) {
+                if (librarian.getPassword().equals(librarianPassword) && librarian.getUserName().equals(librarianFullName)) {
                     System.out.println("Librarian verified");
                     return librarian;
                 }
@@ -145,7 +146,7 @@ public class DataProcessor {
         System.out.println("\nYour new password has been changed\nYour new password is " + newPass);
     }
 
-    void chooseAndChangeBookInfo(Book book, Scanner scanner) {
+    void changeBookInfo(Book book, Scanner scanner) {
         if (book == null) {
             return;
         }

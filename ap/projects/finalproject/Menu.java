@@ -21,7 +21,7 @@ public class Menu {
     void guestMenu() {
         System.out.println("\n====Guest Menu====");
         System.out.println("1. Show the number of students");
-        System.out.println("2. Search a book by title");
+        System.out.println("2. Show all books");
         System.out.println("3. Exit");
     }
 

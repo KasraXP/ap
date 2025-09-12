@@ -1,4 +1,5 @@
 package projects.finalproject;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -88,6 +89,40 @@ public class Application {
                         studentRunning = false;
                     } else {
                         library.printStudentInfo(student);
+
+                        boolean studentRunning2 = true;
+                        while (studentRunning2) {
+                            menu.studentSecondMenu();
+                            int option2 = menu.getOption();
+
+                            switch (option2) {
+                                case 1:
+                                    System.out.println("test");
+                                    library.searchBooksByTitle(books, input);
+                                    break;
+
+                                case 2:
+                                    library.searchBooksByAuthor(books, input);
+                                    break;
+
+                                case 3:
+                                    library.searchBooksByPublishedYear(books, input);
+                                    break;
+
+                                case 4:
+                                case 5:
+                                case 6:
+                                case 7:
+                                    System.out.println("Not implemented");
+                                    break;
+
+                                case 8:
+                                    System.out.println("Exiting...");
+                                    studentRunning2 = false;
+                                    break;
+                            }
+
+                        }
                     }
                     break;
 
@@ -128,9 +163,9 @@ public class Application {
                         break;
 
                     case 3:
-                        Book book = library.searchBookByTitle(books, input);
+                        Book book = library.searchBookToChange(books, input);
                         library.printBookInfo(book);
-                        processor.chooseAndChangeBookInfo(book, input);
+                        processor.changeBookInfo(book, input);
                         saveToFile.saveBooks(books);
                         break;
 
@@ -159,13 +194,15 @@ public class Application {
             int option = menu.getOption();
 
             switch (option) {
-                case 1: {
+                case 1:
                     librarians.add(processor.addLibrarian());
                     saveToFile.saveLibrarian(librarians);
-                }
+                    break;
+
                 case 2:
                     System.out.println("Exiting...");
                     managerRunning = false;
+                    break;
 
                 default:
                     System.out.println("Invalid option");
@@ -186,7 +223,7 @@ public class Application {
                     break;
 
                 case 2:
-                    guest.printBookInfoForGuest(library.searchBookByTitle(books, input));
+                    library.printAllBooks(books);
                     break;
 
                 case 3:

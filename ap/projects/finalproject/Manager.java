@@ -1,18 +1,16 @@
 package projects.finalproject;
 
-import java.util.Scanner;
-
 public class Manager {
-    private final String name;
+    private final String username;
     private final String password;
 
     public Manager() {
-        name = "TheOwner";
+        username = "TheOwner";
         password = "1234567890";
     }
 
     String getName(){
-        return name;
+        return username;
     }
 
     String getPassword(){

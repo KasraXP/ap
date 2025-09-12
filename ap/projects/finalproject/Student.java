@@ -1,27 +1,17 @@
 package projects.finalproject;
 import java.time.LocalDate;
 
-class Student {
-    private final String userName;
-    private final String password;
+class Student extends User implements Storable {
     private final String major;
     private final LocalDate membershipDate;
 
     Student(String userName, String password, String major, LocalDate membershipDate) {
-        this.userName = userName;
-        this.password = password;
+        super(userName, password);
         this.major = major;
         this.membershipDate = membershipDate;
 
     }
 
-    String getUserName() {
-        return userName;
-    }
-
-    String getPassword() {
-        return password;
-    }
 
     String getMajor() {
         return major;
@@ -31,8 +21,8 @@ class Student {
         return membershipDate;
     }
 
-    public String toStringStudent() {
+    public String toString() {
 
-        return getUserName() + "," + getPassword() + "," + getMajor() + "," + getMembershipDate();
+        return  userName + "," + password + "," + major + "," + membershipDate;
     }
 }

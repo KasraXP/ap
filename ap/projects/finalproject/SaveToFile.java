@@ -10,7 +10,7 @@ public class SaveToFile {
         try {
             PrintWriter writer = new PrintWriter("Students.txt.file");
             for (Student student : students) {
-                writer.println(student.toStringStudent());
+                writer.println(student.toString());
             }
             writer.close();
         } catch (IOException e) {
@@ -23,7 +23,7 @@ public class SaveToFile {
         try {
             PrintWriter writer = new PrintWriter("Librarians.txt.file");
             for (Librarian librarian : librarians) {
-                writer.println(librarian.toStringLibrarian());
+                writer.println(librarian.toString());
             }
             writer.close();
         } catch (IOException e) {
@@ -35,7 +35,7 @@ public class SaveToFile {
         try {
             PrintWriter writer = new PrintWriter("Books.txt.file");
             for (Book book : books) {
-                writer.println(book.toStringBook());
+                writer.println(book.toString());
             }
             writer.close();
 

@@ -13,13 +13,6 @@ class Guest {
             System.out.println("\nThere are " + students.size() + " students in Central Library");
     }
 
-    void printBookInfoForGuest(Book book) {
-        System.out.println("\nBook title: " + book.getTitle());
-        System.out.println("Book author: " + book.getAuthor());
-        System.out.println("Book published year: " + book.getPublishedYear());
-        System.out.println("Book pages: " + book.getPages());
-        System.out.println("___________________________");
-    }
 
 
 }

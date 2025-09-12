@@ -1,7 +1,9 @@
 package projects.finalproject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Library {
     private final String libraryName;
@@ -32,12 +34,7 @@ public class Library {
         System.out.println("___________________________");
     }
 
-
-
-
-
-
-    Book searchBookByTitle(ArrayList<Book> books, Scanner scanner) {
+    Book searchBookToChange(ArrayList<Book> books, Scanner scanner) {
 
         if (books.isEmpty()) {
             System.out.println("\nThere is no book in the database");
@@ -61,5 +58,137 @@ public class Library {
             System.out.println("\nThere is not a book with title " + bookTitle + "\n Please try again");
         }
     }
+
+    void searchBooksByPublishedYear(ArrayList<Book> books, Scanner scanner) {
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no book in the database");
+            return;
+        }
+
+        System.out.println("\nEnter a book published year to search (or 0 to exit): ");
+
+        while (true) {
+            try {
+                int year = scanner.nextInt();
+                scanner.nextLine();
+
+                if (year == 0) {
+                    System.out.println("Exiting search...");
+                    break;
+                }
+
+                List<Book> foundBooks = books.stream()
+                        .filter(book -> book.getPublishedYear() == year)
+                        .collect(Collectors.toList());
+
+                if (foundBooks.isEmpty()) {
+                    System.out.println("\nNo books found published in " + year);
+                } else {
+                    System.out.println("\nFound " + foundBooks.size() + " book(s) published in " + year + ":");
+                    foundBooks.forEach(this::printBookInfo);
+                }
+
+                System.out.println("\nEnter another year to search (or 0 to exit): ");
+
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid year number.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    void searchBooksByAuthor (ArrayList<Book> books, Scanner scanner) {
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no book in the database");
+            return;
+        }
+
+        System.out.println("\nEnter an author name to search (or 'exit' to exit): ");
+
+        while (true) {
+            try {
+                String author = scanner.nextLine();
+
+
+                if (author.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting search...");
+                    break;
+                }
+
+                List<Book> foundBooks = books.stream()
+                        .filter(book -> book.getAuthor().equalsIgnoreCase(author))
+                        .collect(Collectors.toList());
+
+                if (foundBooks.isEmpty()) {
+                    System.out.println("\nNo books found by the writer " + author);
+                } else {
+                    System.out.println("\nFound " + foundBooks.size() + " book(s) by " + author + ":");
+                    foundBooks.forEach(this::printBookInfo);
+                }
+
+                System.out.println("\nEnter another author to search (or 'exit' to exit): ");
+
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid author name.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    void searchBooksByTitle (ArrayList<Book> books, Scanner scanner) {
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no book in the database");
+            return;
+        }
+
+        System.out.println("\nEnter a book title to search (or 'exit' to exit): ");
+
+        while (true) {
+            try {
+                String title = scanner.nextLine();
+
+
+                if (title.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting search...");
+                    break;
+                }
+
+                List<Book> foundBooks = books.stream()
+                        .filter(book -> book.getTitle().equalsIgnoreCase(title))
+                        .collect(Collectors.toList());
+
+                if (foundBooks.isEmpty()) {
+                    System.out.println("\nNo book found with the title " + title);
+                } else {
+                    System.out.println("\nFound " + foundBooks.size() + " book(s) with the title " + title + ":");
+                    foundBooks.forEach(this::printBookInfo);
+                }
+
+                System.out.println("\nEnter another book title to search (or 'exit' to exit): ");
+
+            } catch (java.util.InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid book title.");
+                scanner.nextLine();
+            }
+        }
+    }
+
+    void printAllBooks(ArrayList<Book> books) {
+
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no books in Central Library");
+            return;
+        }
+
+        for (Book book : books) {
+            System.out.println("\nBook title: " + book.getTitle());
+            System.out.println("Book author: " + book.getAuthor());
+            System.out.println("Book published year: " + book.getPublishedYear());
+            System.out.println("Book pages: " + book.getPages());
+            System.out.println("___________________________");
+        }
+    }
+
+
 
 }

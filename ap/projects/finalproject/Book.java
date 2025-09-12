@@ -1,6 +1,6 @@
 package projects.finalproject;
 
-class Book {
+class Book implements Storable {
     private String title;
     private String author;
     private int pages;
@@ -8,21 +8,21 @@ class Book {
     private boolean isLoaned;
     private int loanCount;
 
-    Book(String title, String author, int pages, int publishedDate) {
+    Book(String title, String author, int pages, int publishedYear) {
         this.title = title;
         this.author = author;
         this.pages = pages;
-        this.publishedYear = publishedDate;
+        this.publishedYear = publishedYear;
         this.isLoaned = false;
         this.loanCount = 0;
 
     }
 
-    Book(String title, String author, int pages, int publishedDate, Boolean isLoaned, int loanCount) {
+    Book(String title, String author, int pages, int publishedYear, Boolean isLoaned, int loanCount) {
         this.title = title;
         this.author = author;
         this.pages = pages;
-        this.publishedYear = publishedDate;
+        this.publishedYear = publishedYear;
         this.isLoaned = isLoaned;
         this.loanCount = loanCount;
     }
@@ -71,9 +71,9 @@ class Book {
         this.isLoaned = isLoaned;
     }
 
-    public String toStringBook() {
+    public String toString() {
 
-        return getTitle() + "," + getAuthor() + "," + getPages() + "," + getPublishedYear() + "," + getIsLoaned() + "," + getLoanCount();
+        return title + "," + author + "," + pages + "," + publishedYear + "," + isLoaned + "," + loanCount;
     }
 
     public void setLoanCount(int count) {
