@@ -1,8 +1,7 @@
 package projects.finalproject;
-
 import java.time.LocalDate;
 
-public class Student {
+class Student {
     private final String userName;
     private final String password;
     private final String major;

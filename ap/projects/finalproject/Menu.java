@@ -10,7 +10,8 @@ public class Menu {
     }
 
     void showMainMenu() {
-        System.out.println("\n1. Student menu ");
+        System.out.println("\n====Main Menu====");
+        System.out.println("1. Student menu ");
         System.out.println("2. Librarian menu");
         System.out.println("3. Manager menu");
         System.out.println("4. Guest menu");
@@ -32,7 +33,8 @@ public class Menu {
     }
 
     void studentSecondMenu() {
-        System.out.println("\n1. Search a book by title");
+        System.out.println("\n====Student Second Menu====");
+        System.out.println("1. Search a book by title");
         System.out.println("2. Search a book by author");
         System.out.println("3. Search a book by published year");
         System.out.println("4. Loan a book ");
@@ -51,13 +53,13 @@ public class Menu {
     }
 
     void ManagerMenu() {
-        System.out.println("\n====Manager Menu====");
+        System.out.println("====Manager Menu====");
         System.out.println("1. Add a new Librarian ");
         System.out.println("2. Exit");
     }
 
     int getOption() {
-        System.out.println("\nEnter your Option: ");
+        System.out.print("\nEnter your Option: ");
         return scan.nextInt();
     }
 }

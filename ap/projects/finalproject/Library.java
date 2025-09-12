@@ -32,79 +32,10 @@ public class Library {
         System.out.println("___________________________");
     }
 
-    Student studentVerification(ArrayList<Student> students, Scanner scanner) {
-        System.out.println("====Student verification====");
-        boolean isThereOurStudent = false;
-
-        while (true) {
-
-            String studentUserName = null;
-            String studentPassword;
 
 
-            System.out.println("Enter your username: ");
-            studentUserName = scanner.nextLine();
-
-            if (studentUserName != null && studentUserName.equalsIgnoreCase("exit")) {
-                System.out.println("Exiting...");
-                return null;
-            }
-
-            System.out.println("Enter your password: ");
-            studentPassword = scanner.nextLine();
 
 
-            for (Student student : students) {
-                if (student.getPassword().equals(studentPassword) && student.getUserName().equals(studentUserName)) {
-                    System.out.println("Student verified");
-                    isThereOurStudent = true;
-                    return student;
-                }
-            }
-
-            if (!isThereOurStudent) {
-                System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
-            }
-
-        }
-    }
-
-    Librarian librarianVerification(ArrayList<Librarian> librarians, Scanner scanner) {
-
-        System.out.println("====Librarian verification====");
-        boolean isThereOurLibrarian = false;
-
-        while (true) {
-
-            String librarianFullName = null;
-            String librarianPassword;
-
-
-            System.out.println("Enter your username: ");
-            librarianFullName = scanner.nextLine();
-
-            if (librarianFullName != null && librarianFullName.equalsIgnoreCase("exit")) {
-                System.out.println("Exiting...");
-                return null;
-            }
-
-            System.out.println("Enter your password: ");
-            librarianPassword = scanner.nextLine();
-
-
-            for (Librarian librarian : librarians) {
-                if (librarian.getPassword().equals(librarianPassword) && librarian.getFullName().equals(librarianFullName)) {
-                    System.out.println("Librarian verified");
-                    isThereOurLibrarian = true;
-                    return librarian;
-                }
-            }
-
-            if (!isThereOurLibrarian) {
-                System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
-            }
-        }
-    }
 
     Book searchBookByTitle(ArrayList<Book> books, Scanner scanner) {
 
@@ -114,7 +45,6 @@ public class Library {
         }
 
         System.out.println("\nEnter the book title to search: ");
-
         while (true) {
             String bookTitle = scanner.nextLine();
 
