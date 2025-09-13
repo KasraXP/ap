@@ -204,6 +204,18 @@ public class Application {
                         break;
 
                     case 6:
+                        processor.activateStudent(students, input);
+                        processor.clearFile("Students.txt.file");
+                        saveToFile.saveStudents(students);
+                        break;
+
+                    case 7:
+                        processor.deactivateStudent(students, input);
+                        processor.clearFile("Students.txt.file");
+                        saveToFile.saveStudents(students);
+                        break;
+
+                    case 8:
                         System.out.println("Exiting...");
                         librarianRunning2 = false;
                         break;

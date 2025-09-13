@@ -4,11 +4,13 @@ import java.time.LocalDate;
 class Student extends User implements Storable {
     private final String major;
     private final LocalDate membershipDate;
+    private boolean isActive;
 
     Student(String userName, String password, String major, LocalDate membershipDate) {
         super(userName, password);
         this.major = major;
         this.membershipDate = membershipDate;
+        this.isActive = true;
 
     }
 
@@ -21,8 +23,16 @@ class Student extends User implements Storable {
         return membershipDate;
     }
 
-    public String toString() {
+    public boolean isActive() {
+        return isActive;
+    }
 
-        return  userName + "," + password + "," + major + "," + membershipDate;
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+
+    public String toString() {
+        return  userName + "," + password + "," + major + "," + membershipDate + "," + isActive;
     }
 }

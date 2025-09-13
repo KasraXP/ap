@@ -17,7 +17,11 @@ public class LoadFromFile {
             String password = parts[1];
             String major = parts[2];
             LocalDate membershipDate = LocalDate.parse(parts[3]);
-            return new Student(userName, password, major, membershipDate);
+            boolean isActive = Boolean.parseBoolean(parts[4]); // ✅ خواندن وضعیت فعال بودن
+
+            Student student = new Student(userName, password, major, membershipDate);
+            student.setActive(isActive);
+            return student;
         }
 
     }

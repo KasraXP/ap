@@ -52,7 +52,9 @@ public class Menu {
         System.out.println("3. Show loan requests ");
         System.out.println("4. Change book info ");
         System.out.println("5. Show loan information about student ");
-        System.out.println("6. Exit");
+        System.out.println("6. Make a student active");
+        System.out.println("7. Make a student inactive");
+        System.out.println("8. Exit");
     }
 
     void ManagerMenu() {

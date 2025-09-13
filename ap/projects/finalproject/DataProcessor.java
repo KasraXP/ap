@@ -205,6 +205,12 @@ public class DataProcessor {
             return;
         }
 
+        if (!student.isActive()) {
+            System.out.println("Sorry, your account is deactivated. You cannot borrow books.");
+            System.out.println("Please contact the library administrator.");
+            return;
+        }
+
         ArrayList<Book> availableBooks = new ArrayList<>();
         for (Book book : books) {
             if (!book.getIsLoaned()) {
@@ -353,6 +359,100 @@ public class DataProcessor {
 
 
         System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned to " + lib.getUserName());
+    }
+
+    void deactivateStudent(ArrayList<Student> students, Scanner scanner) {
+        if (students == null || students.isEmpty()) {
+            System.out.println("There are no students in the library.");
+            return;
+        }
+
+        System.out.println("Enter the username of the student to deactivate:");
+
+        while (true) {
+            String username = scanner.nextLine().trim();
+
+            if (username.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting...");
+                return;
+            }
+
+            if (username.isEmpty()) {
+                System.out.println("Username cannot be empty! Please try again:");
+                continue;
+            }
+
+            boolean studentFound = false;
+
+            for (Student student : students) {
+                if (student != null && username.equalsIgnoreCase(student.getUserName())) {
+                    studentFound = true;
+
+                    if (!student.isActive()) {
+                        System.out.println("Student " + username + " is already deactivated.");
+                        break;
+                    }
+
+                    student.setActive(false);
+                    System.out.println("Student " + username + " has been deactivated successfully.");
+                    System.out.println("This student can no longer borrow books.");
+                    break;
+                }
+            }
+
+            if (!studentFound) {
+                System.out.println("Student with username '" + username + "' not found.");
+            }
+
+            System.out.println("Enter another username to deactivate or type 'exit' to cancel:");
+        }
+    }
+
+    void activateStudent(ArrayList<Student> students, Scanner scanner) {
+        if (students == null || students.isEmpty()) {
+            System.out.println("There are no students in the library.");
+            return;
+        }
+
+        System.out.println("Enter the username of the student to activate:");
+
+        while (true) {
+            String username = scanner.nextLine().trim();
+
+            if (username.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting...");
+                return;
+            }
+
+            if (username.isEmpty()) {
+                System.out.println("Username cannot be empty! Please try again:");
+                continue;
+            }
+
+            boolean studentFound = false;
+
+            for (Student student : students) {
+                if (student != null && username.equalsIgnoreCase(student.getUserName())) {
+                    studentFound = true;
+
+                    if (student.isActive()) {
+                        System.out.println("Student " + username + " is already active.");
+                        break;
+                    }
+
+                    student.setActive(true);
+                    System.out.println("Student " + username + " has been activated successfully.");
+                    System.out.println("This student can now borrow books again.");
+                    break;
+                }
+            }
+
+            if (!studentFound) {
+                System.out.println("Student with username '" + username + "' not found.");
+            }
+
+            System.out.println("Enter another username to activate or type 'exit' to cancel:");
+        }
     }
 
     void clearFile(String fileName) {
