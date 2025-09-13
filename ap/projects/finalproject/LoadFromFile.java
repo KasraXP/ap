@@ -43,9 +43,11 @@ public class LoadFromFile {
         } else {
             String[] parts = line.split(",");
             String fullName = parts[0];
-            String employeeId = parts[1];
+            String password= parts[1];
+            int givenCount = Integer.parseInt(parts[2]);
+            int receivedCount = Integer.parseInt(parts[3]);
 
-            return new Librarian(fullName, employeeId);
+            return new Librarian(fullName, password, givenCount, receivedCount);
         }
     }
 
@@ -71,7 +73,8 @@ public class LoadFromFile {
         int publishedDate = Integer.parseInt(parts[3]);
         boolean isLoaned = Boolean.parseBoolean(parts[4]);
         int loanCount = Integer.parseInt(parts[5]);
-        return new Book(title, author, pages, publishedDate, isLoaned, loanCount);
+        String theLibrarian = parts[6];
+        return new Book(title, author, pages, publishedDate, isLoaned, loanCount, theLibrarian);
     }
 
     public ArrayList<Book> loadBooks(String filename) {

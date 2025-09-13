@@ -7,24 +7,27 @@ class Book implements Storable {
     private int publishedYear;
     private boolean isLoaned;
     private int loanCount;
+    private String theLibrarian;
 
-    Book(String title, String author, int pages, int publishedYear) {
+    Book(String title, String author, int pages, int publishedYear, String theLibrarian) {
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.publishedYear = publishedYear;
+        this.theLibrarian = theLibrarian;
         this.isLoaned = false;
         this.loanCount = 0;
 
     }
 
-    Book(String title, String author, int pages, int publishedYear, Boolean isLoaned, int loanCount) {
+    Book(String title, String author, int pages, int publishedYear, Boolean isLoaned, int loanCount, String theLibrarian) {
         this.title = title;
         this.author = author;
         this.pages = pages;
         this.publishedYear = publishedYear;
         this.isLoaned = isLoaned;
         this.loanCount = loanCount;
+        this.theLibrarian = theLibrarian;
     }
 
     public String getTitle() {
@@ -45,6 +48,10 @@ class Book implements Storable {
 
     public Boolean getIsLoaned() {
         return isLoaned;
+    }
+
+    public void setLoanCount(){
+        this.loanCount++;
     }
 
     public int getLoanCount() {
@@ -71,12 +78,13 @@ class Book implements Storable {
         this.isLoaned = isLoaned;
     }
 
+    public String getTheLibrarian() {
+        return theLibrarian;
+    }
+
     public String toString() {
 
-        return title + "," + author + "," + pages + "," + publishedYear + "," + isLoaned + "," + loanCount;
+        return title + "," + author + "," + pages + "," + publishedYear + "," + isLoaned + "," + loanCount + "," + theLibrarian;
     }
 
-    public void setLoanCount(int count) {
-        this.loanCount = count;
-    }
 }

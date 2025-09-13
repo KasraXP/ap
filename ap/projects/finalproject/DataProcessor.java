@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Scanner;
 
 public class DataProcessor {
@@ -35,59 +36,82 @@ public class DataProcessor {
         return new Librarian(fullName, employeeId);
     }
 
-    Book addBook() {
+    Book addBook(Librarian librarian) {
         System.out.print("Enter book title: ");
         String title = scanner.nextLine();
         System.out.print("Enter book author: ");
         String author = scanner.nextLine();
         System.out.print("Enter book pages: ");
-        int publishedYear = scanner.nextInt();
-        System.out.println("enter book published year: ");
         int pages = scanner.nextInt();
-        return new Book(title, author, pages, publishedYear);
+        System.out.println("enter book published year: ");
+        int publishedYear = scanner.nextInt();
+        return new Book(title, author, pages, publishedYear,librarian.getUserName());
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
+        if (students == null || students.isEmpty()) {
+            System.out.println("There are no students in the database.");
+            return null;
+        }
 
         System.out.println("\n====Student verification====");
+
         while (true) {
-            System.out.println("Enter your username: ");
+            System.out.println("Enter your username (or type 'exit' to cancel):");
             String studentUserName = scanner.nextLine();
 
-            if (studentUserName.equalsIgnoreCase("exit")) {
+            if (studentUserName == null || studentUserName.trim().isEmpty()) {
+                System.out.println("Username cannot be empty! Please try again.");
+                continue;
+            }
+
+            if (studentUserName.trim().equalsIgnoreCase("exit")) {
                 System.out.println("Exiting...");
                 return null;
             }
 
-            System.out.println("Enter your password: ");
+            System.out.println("Enter your password (or type 'exit' to cancel):");
             String studentPassword = scanner.nextLine();
 
-            if (studentPassword.equalsIgnoreCase("exit")) {
+            if (studentPassword == null || studentPassword.trim().isEmpty()) {
+                System.out.println("Password cannot be empty! Please try again.");
+                continue;
+            }
+
+            if (studentPassword.trim().equalsIgnoreCase("exit")) {
                 System.out.println("Exiting...");
                 return null;
             }
 
             for (Student student : students) {
-                if (student.getPassword().equals(studentPassword) && student.getUserName().equals(studentUserName)) {
-                    System.out.println("Student verified");
+                if (student == null) {
+                    continue;
+                }
+
+                String username = student.getUserName();
+                String password = student.getPassword();
+
+                if (username != null && password != null &&
+                        username.equals(studentUserName.trim()) &&
+                        password.equals(studentPassword.trim())) {
+                    System.out.println("Student verified successfully!");
                     return student;
                 }
             }
 
-            System.out.println("Wrong password or name\nplease try again or type (exit) to cancel");
-
+            System.out.println("Wrong username or password!\nPlease try again or type 'exit' to cancel.");
         }
     }
 
     Librarian librarianVerification(ArrayList<Librarian> librarians, Scanner scanner) {
 
-        System.out.println("====Librarian verification====");
 
         if (librarians.isEmpty()) {
             System.out.println("There is no librarian");
             return null;
         }
 
+        System.out.println("====Librarian verification====");
         while (true) {
 
             System.out.println("Enter your username: ");
@@ -114,11 +138,13 @@ public class DataProcessor {
     }
 
     boolean managerVerification(Scanner scanner, Manager manager) {
+
+        System.out.println("====Manager verification====");
         while (true) {
             System.out.print("Enter your username: ");
             String managerName = scanner.nextLine();
 
-            if ("exit".equalsIgnoreCase(managerName)) {
+            if (managerName != null && managerName.equalsIgnoreCase("exit")) {
                 System.out.println("Exiting...");
                 return false;
             }
@@ -126,9 +152,14 @@ public class DataProcessor {
             System.out.print("Enter your password: ");
             String managerPassword = scanner.nextLine();
 
-            if ("exit".equalsIgnoreCase(managerPassword)) {
+            if (managerPassword != null && managerPassword.equalsIgnoreCase("exit")) {
                 System.out.println("Exiting...");
                 return false;
+            }
+
+            if(managerName.isEmpty() || managerPassword.isEmpty()) {
+                System.out.println("Username or password can not be empty");
+                continue;
             }
 
             if (managerName.equals(manager.getName()) && managerPassword.equals(manager.getPassword())) {
@@ -216,7 +247,7 @@ public class DataProcessor {
         System.out.println("Your loan request for " + loanDays + " days has been sent.");
     }
 
-    public void handleLoanRequests(ArrayList<LoanRequest> loanRequests, ArrayList<Loan> loans, Scanner scanner) {
+    public void handleLoanRequests(ArrayList<LoanRequest> loanRequests, Librarian librarian, ArrayList<Loan> loans, Scanner scanner) {
 
         ArrayList<LoanRequest> pendingRequests = new ArrayList<>();
         for (LoanRequest req : loanRequests) {
@@ -266,6 +297,9 @@ public class DataProcessor {
                     now, dueDate, null);
             loans.add(loan);
             selectedRequest.getBook().setIsLoaned(true);
+            selectedRequest.getBook().setLoanCount();
+            librarian.setGivenCount();
+
 
             System.out.println("Loan request approved successfully.");
 
@@ -277,7 +311,7 @@ public class DataProcessor {
         }
     }
 
-    public void returnBook(ArrayList<Loan> loans, Student student, Scanner scanner) {
+    public void returnBook(ArrayList<Loan> loans, ArrayList<Librarian> librarians, Student student, Scanner scanner) {
 
         String pass = student.getPassword();
 
@@ -312,7 +346,13 @@ public class DataProcessor {
         selectedLoan.getBook().setIsLoaned(false);
         selectedLoan.setReturnDate(LocalDate.now());
 
-        System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned.");
+        Random random = new Random();
+        int rnd = random.nextInt(librarians.size());
+        Librarian lib = librarians.get(rnd);
+        lib.setReceivedCount();
+
+
+        System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned to " + lib.getUserName());
     }
 
     void clearFile(String fileName) {

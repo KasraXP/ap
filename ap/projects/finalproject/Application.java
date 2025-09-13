@@ -118,15 +118,17 @@ public class Application {
                                     break;
 
                                 case 5:
-                                    processor.returnBook(loans, student, input);
+                                    processor.returnBook(loans, librarians, student, input);
                                     processor.clearFile("Loans.txt.file");
                                     saveToFile.saveLoans(loans);
                                     processor.clearFile("Books.txt.file");
                                     saveToFile.saveBooks(books);
+                                    processor.clearFile("Librarians.txt.file");
+                                    saveToFile.saveLibrarian(librarians);
                                     break;
 
                                 case 6:
-                                    library.printLoanBooksInfo(books);
+                                    library.printLoanBooksInfo(loans);
                                     break;
 
                                 case 7:
@@ -175,16 +177,18 @@ public class Application {
                         break;
 
                     case 2:
-                        books.add(processor.addBook());
+                        books.add(processor.addBook(librarian));
                         saveToFile.saveBooks(books);
                         break;
 
                     case 3:
-                        processor.handleLoanRequests(loanRequests,loans,input);
+                        processor.handleLoanRequests(loanRequests, librarian, loans,input);
                         saveToFile.saveLoans(loans);
                         processor.clearFile("LoanRequests.txt.file");
                         processor.clearFile("Books.txt.file");
+                        processor.clearFile("Librarians.txt.file");
                         saveToFile.saveBooks(books);
+                        saveToFile.saveLibrarian(librarians);
                         break;
 
                     case 4:
@@ -194,7 +198,7 @@ public class Application {
                         saveToFile.saveBooks(books);
                         break;
 
-                    case 7:
+                    case 5:
                         System.out.println("Exiting...");
                         librarianRunning2 = false;
                         break;
@@ -224,7 +228,12 @@ public class Application {
                     saveToFile.saveLibrarian(librarians);
                     break;
 
+
                 case 2:
+                    library.printLibrarianInfo(librarians,books,input);
+                    break;
+
+                case 3:
                     System.out.println("Exiting...");
                     managerRunning = false;
                     break;

@@ -38,15 +38,15 @@ public class Library {
         System.out.println("___________________________");
     }
 
-    void printLoanBooksInfo(List<Book> books) {
-        if (books == null) {
+    void printLoanBooksInfo( List<Loan> loans) {
+        if (loans == null) {
             System.out.println("No books found");
             return;
         }
 
-        for (Book book : books) {
-            if (book.getIsLoaned()) {
-                printBookInfo(book);
+        for (Loan loan : loans) {
+            if (loan.getReturnDate() == null ) {
+                printBookInfo(loan.getBook());
             }
         }
     }
@@ -204,6 +204,49 @@ public class Library {
             System.out.println("Book pages: " + book.getPages());
             System.out.println("___________________________");
         }
+    }
+
+    void printLibrarianInfo(ArrayList<Librarian> librarians, ArrayList<Book> books, Scanner scanner) {
+
+        if (librarians.isEmpty() || books.isEmpty()) {
+            System.out.println("There is no librarian or books in library");
+            return;
+        }
+
+        System.out.println("Enter a username to see librarian information about.");
+
+        while (true) {
+
+            String username = scanner.nextLine();
+
+            if (username.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting search...");
+                return;
+            }
+
+            for (Librarian librarian : librarians) {
+                if(librarian.getUserName().equalsIgnoreCase(username)) {
+                    System.out.println("Librarian name: " + librarian.getUserName());
+                    System.out.println("Librarian password: " + librarian.getPassword());
+
+                    for (Book book : books) {
+                        if(book.getTheLibrarian().equalsIgnoreCase(librarian.getUserName())) {
+                            System.out.println("Added Book : " + book.getTitle());
+                        }
+
+                    }
+
+                    System.out.println("Given books: " + librarian.getGivenCount());
+                    System.out.println("Received books: " + librarian.getReceivedCount());
+                }else
+                    System.out.println("Invalid username. Please enter a valid username.");
+            }
+
+            System.out.println("Enter another username to see librarian information about (or 'exit' to exit): ");
+        }
+
+
+
     }
 
 
