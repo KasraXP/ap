@@ -31,11 +31,24 @@ public class Library {
         System.out.println("Book author: " + book.getAuthor());
         System.out.println("Book pages: " + book.getPages());
         System.out.println("Book published year: " + book.getPublishedYear());
-        if(book.getIsLoaned()){
+        if (book.getIsLoaned()) {
             System.out.println("This book is loaned at the moment ");
-        }else
+        } else
             System.out.println("This book is not loaned at the moment ");
         System.out.println("___________________________");
+    }
+
+    void printLoanBooksInfo(List<Book> books) {
+        if (books == null) {
+            System.out.println("No books found");
+            return;
+        }
+
+        for (Book book : books) {
+            if (book.getIsLoaned()) {
+                printBookInfo(book);
+            }
+        }
     }
 
     Book searchBookToChange(ArrayList<Book> books, Scanner scanner) {
@@ -101,7 +114,7 @@ public class Library {
         }
     }
 
-    void searchBooksByAuthor (ArrayList<Book> books, Scanner scanner) {
+    void searchBooksByAuthor(ArrayList<Book> books, Scanner scanner) {
         if (books.isEmpty()) {
             System.out.println("\nThere is no book in the database");
             return;
@@ -139,7 +152,7 @@ public class Library {
         }
     }
 
-    void searchBooksByTitle (ArrayList<Book> books, Scanner scanner) {
+    void searchBooksByTitle(ArrayList<Book> books, Scanner scanner) {
         if (books.isEmpty()) {
             System.out.println("\nThere is no book in the database");
             return;
@@ -192,7 +205,6 @@ public class Library {
             System.out.println("___________________________");
         }
     }
-
 
 
 }

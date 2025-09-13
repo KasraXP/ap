@@ -277,6 +277,44 @@ public class DataProcessor {
         }
     }
 
+    public void returnBook(ArrayList<Loan> loans, Student student, Scanner scanner) {
+
+        String pass = student.getPassword();
+
+        ArrayList<Loan> activeLoans = new ArrayList<>();
+
+        for (Loan loan : loans) {
+            if (loan.getStudent().getPassword().equals(pass) && loan.getReturnDate() == null) {
+                activeLoans.add(loan);
+            }
+        }
+
+        if (activeLoans.isEmpty()) {
+            System.out.println("You have no books currently on loan.");
+            return;
+        }
+
+        System.out.println("Books you currently have on loan:");
+        for (int i = 0; i < activeLoans.size(); i++) {
+            Loan loan = activeLoans.get(i);
+            System.out.println((i + 1) + ". " + loan.getBook().getTitle() + " (Due: " + loan.getDueDate() + ")");
+        }
+
+        System.out.println("Enter the number of the book you want to return:");
+        int choice = Integer.parseInt(scanner.nextLine());
+
+        if (choice < 1 || choice > activeLoans.size()) {
+            System.out.println("Invalid selection.");
+            return;
+        }
+
+        Loan selectedLoan = activeLoans.get(choice - 1);
+        selectedLoan.getBook().setIsLoaned(false);
+        selectedLoan.setReturnDate(LocalDate.now());
+
+        System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned.");
+    }
+
     void clearFile(String fileName) {
         try (PrintWriter writer = new PrintWriter(fileName)) {
 

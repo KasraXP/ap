@@ -118,9 +118,19 @@ public class Application {
                                     break;
 
                                 case 5:
+                                    processor.returnBook(loans, student, input);
+                                    processor.clearFile("Loans.txt.file");
+                                    saveToFile.saveLoans(loans);
+                                    processor.clearFile("Books.txt.file");
+                                    saveToFile.saveBooks(books);
+                                    break;
+
                                 case 6:
+                                    library.printLoanBooksInfo(books);
+                                    break;
+
                                 case 7:
-                                    System.out.println("Not implemented");
+                                   library.printStudentInfo(student);
                                     break;
 
                                 case 8:
