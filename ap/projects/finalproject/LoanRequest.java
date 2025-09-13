@@ -1,6 +1,5 @@
 package projects.finalproject;
 
-
 class LoanRequest implements Storable {
     private final Book book;
     private final Student student;
@@ -13,7 +12,6 @@ class LoanRequest implements Storable {
         this.loanDurationDays = loanDurationDays;
         this.status = "PENDING";
     }
-
 
     Student getStudent() {
         return student;
@@ -30,7 +28,6 @@ class LoanRequest implements Storable {
     String getStatus() {
         return status;
     }
-
 
     void setStatus(String status) {
         this.status = status;

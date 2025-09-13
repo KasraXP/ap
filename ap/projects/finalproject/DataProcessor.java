@@ -4,49 +4,122 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
 public class DataProcessor {
-    private final Scanner scanner;
-
-
-    DataProcessor(Scanner scanner) {
-        this.scanner = scanner;
-
-    }
 
     Student addStudent() {
-        System.out.println("\nEnter your username: ");
-        String userName = scanner.nextLine();
-        System.out.println("Enter your password: ");
-        String password = scanner.nextLine();
-        System.out.println("Enter your Major: ");
-        String major = scanner.nextLine();
-        System.out.println("You have been successfully added to the library ");
-        return new Student(userName, password, major, LocalDate.now());
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n=== Student Registration ===");
+
+        try {
+            System.out.print("Enter username: ");
+            String userName = scanner.nextLine().trim();
+
+            if (userName.isEmpty()) {
+                throw new IllegalArgumentException("Username cannot be empty!");
+            }
+
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine().trim();
+
+            if (password.isEmpty()) {
+                throw new IllegalArgumentException("Password cannot be empty!");
+            }
+
+            System.out.print("Enter major: ");
+            String major = scanner.nextLine().trim();
+
+            if (major.isEmpty()) {
+                throw new IllegalArgumentException("Major cannot be empty!");
+            }
+
+            System.out.println("Student '" + userName + "' registered successfully!");
+            return new Student(userName, password, major, LocalDate.now());
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 
     Librarian addLibrarian() {
-        System.out.println("\nEnter librarian full name: ");
-        String fullName = scanner.nextLine();
-        System.out.println("Enter librarian employee ID: ");
-        String employeeId = scanner.nextLine();
-        return new Librarian(fullName, employeeId);
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n=== Add New Librarian ===");
+
+        try {
+            System.out.print("Enter librarian full name: ");
+            String fullName = scanner.nextLine().trim();
+
+            if (fullName.isEmpty()) {
+                throw new IllegalArgumentException("Name cannot be empty!");
+            }
+
+            System.out.print("Enter employee ID: ");
+            String employeeId = scanner.nextLine().trim();
+
+            if (employeeId.isEmpty()) {
+                throw new IllegalArgumentException("Employee ID cannot be empty!");
+            }
+
+            System.out.println(" Librarian '" + fullName + "' added successfully!");
+            return new Librarian(fullName, employeeId);
+
+        } catch (Exception e) {
+            System.out.println(" Error: " + e.getMessage());
+            return null;
+        }
     }
 
     Book addBook(Librarian librarian) {
-        System.out.print("Enter book title: ");
-        String title = scanner.nextLine();
-        System.out.print("Enter book author: ");
-        String author = scanner.nextLine();
-        System.out.print("Enter book pages: ");
-        int pages = scanner.nextInt();
-        System.out.println("enter book published year: ");
-        int publishedYear = scanner.nextInt();
-        return new Book(title, author, pages, publishedYear,librarian.getUserName());
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n=== Add New Book ===");
+
+        try {
+            System.out.print("Enter book title: ");
+            String title = scanner.nextLine().trim();
+
+            if (title.isEmpty()) {
+                throw new IllegalArgumentException("Title cannot be empty!");
+            }
+
+            System.out.print("Enter book author: ");
+            String author = scanner.nextLine().trim();
+
+            if (author.isEmpty()) {
+                throw new IllegalArgumentException("Author cannot be empty!");
+            }
+
+            System.out.print("Enter book pages: ");
+            int pages = Integer.parseInt(scanner.nextLine().trim());
+
+            if (pages <= 0) {
+                throw new IllegalArgumentException("Pages must be positive number!");
+            }
+
+            System.out.print("Enter published year: ");
+            int publishedYear = Integer.parseInt(scanner.nextLine().trim());
+
+            int currentYear = LocalDate.now().getYear();
+            if (publishedYear < 1000 || publishedYear > currentYear) {
+                throw new IllegalArgumentException("Please enter a valid year!");
+            }
+
+            System.out.println("Book '" + title + "' added successfully!");
+            return new Book(title, author, pages, publishedYear, librarian.getUserName());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Please enter valid numbers for pages and year!");
+            return null;
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+            return null;
+        }
     }
 
     Student studentVerification(ArrayList<Student> students, Scanner scanner) {
@@ -158,7 +231,7 @@ public class DataProcessor {
                 return false;
             }
 
-            if(managerName.isEmpty() || managerPassword.isEmpty()) {
+            if (managerName.isEmpty() || managerPassword.isEmpty()) {
                 System.out.println("Username or password can not be empty");
                 continue;
             }
@@ -183,20 +256,48 @@ public class DataProcessor {
         if (book == null) {
             return;
         }
+
         System.out.print("Enter new book title: ");
         String newTitle = scanner.nextLine();
         book.setNewTitle(newTitle);
+
         System.out.print("Enter new book author: ");
         String newAuthor = scanner.nextLine();
         book.setNewAuthor(newAuthor);
-        System.out.print("Enter new book published year: ");
-        int newPublishedYear = scanner.nextInt();
-        book.setNewPublishedYear(newPublishedYear);
-        System.out.print("Enter new book pages: ");
-        int newPages = scanner.nextInt();
-        book.setNewPages(newPages);
-        System.out.print("The book information has been changed successfully");
 
+        int newPublishedYear = 0;
+        while (true) {
+            System.out.print("Enter new book published year: ");
+            String yearInput = scanner.nextLine().trim();
+
+            try {
+                newPublishedYear = Integer.parseInt(yearInput);
+                break;
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number!");
+            }
+        }
+        book.setNewPublishedYear(newPublishedYear);
+
+        int newPages = 0;
+        while (true) {
+            System.out.print("Enter new book pages: ");
+            String pagesInput = scanner.nextLine().trim();
+
+            try {
+                newPages = Integer.parseInt(pagesInput);
+                if (newPages <= 0) {
+                    System.out.println("Pages must be positive!");
+                } else {
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid number!");
+            }
+        }
+        book.setNewPages(newPages);
+
+        System.out.println("Book information updated successfully!");
     }
 
     void requestBookToLoan(Student student, ArrayList<Book> books, ArrayList<LoanRequest> loanRequests, Scanner scanner) {
@@ -271,9 +372,7 @@ public class DataProcessor {
         System.out.println("Pending loan requests:");
         for (int i = 0; i < pendingRequests.size(); i++) {
             LoanRequest req = pendingRequests.get(i);
-            System.out.println((i + 1) + ". Student: " + req.getStudent().getUserName() +
-                    " - Book: " + req.getBook().getTitle() +
-                    " - Duration: " + req.getLoanDurationDays() + " days");
+            System.out.println((i + 1) + ". Student: " + req.getStudent().getUserName() + " - Book: " + req.getBook().getTitle() + " - Duration: " + req.getLoanDurationDays() + " days");
         }
 
         System.out.println("Enter the number of the request you want to handle (or 0 to cancel):");
@@ -456,9 +555,7 @@ public class DataProcessor {
         }
     }
 
-
-
-        void clearFile(String fileName) {
+    void clearFile(String fileName) {
         try (PrintWriter writer = new PrintWriter(fileName)) {
 
         } catch (IOException e) {

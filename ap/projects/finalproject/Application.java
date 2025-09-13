@@ -22,7 +22,7 @@ public class Application {
         this.input = new Scanner(System.in);
         this.library = new Library();
         this.manager = new Manager();
-        this.processor = new DataProcessor(input);
+        this.processor = new DataProcessor();
         this.guest = new Guest();
         this.loadFromFile = new LoadFromFile();
         this.saveToFile = new SaveToFile();
@@ -43,33 +43,38 @@ public class Application {
         System.out.println("Welcome to " + library.getLibraryName() + " library!");
 
         while (true) {
-            menu.showMainMenu();
-            int option = menu.getOption();
+            try {
+                menu.showMainMenu();
+                int option = menu.getOption();
 
-            switch (option) {
-                case 1:
-                    handleStudentMenu();
-                    break;
+                switch (option) {
+                    case 1:
+                        handleStudentMenu();
+                        break;
 
-                case 2:
-                    handleLibrarianMenu();
-                    break;
+                    case 2:
+                        handleLibrarianMenu();
+                        break;
 
-                case 3:
-                    handleManagerMenu();
-                    break;
+                    case 3:
+                        handleManagerMenu();
+                        break;
 
-                case 4:
-                    handleGuestMenu();
-                    break;
+                    case 4:
+                        handleGuestMenu();
+                        break;
 
-                case 5: {
-                    System.out.println("Thank you!");
-                    System.exit(0);
-                    break;
+                    case 5: {
+                        System.out.println("Thank you!");
+                        System.exit(0);
+                        break;
+                    }
+                    default:
+                        System.out.println("Invalid option");
                 }
-                default:
-                    System.out.println("Invalid option");
+
+            } catch (Exception e) {
+                System.out.println("An error occurred" + e.getMessage());
             }
         }
     }
@@ -78,80 +83,92 @@ public class Application {
 
         boolean studentRunning = true;
         while (studentRunning) {
-            menu.studentFirstMenu();
-            int option = menu.getOption();
+            try {
+                menu.studentFirstMenu();
+                int option = menu.getOption();
 
-            switch (option) {
-                case 1:
-                    students.add(processor.addStudent());
-                    saveToFile.saveStudents(students);
-                    break;
+                switch (option) {
+                    case 1:
+                        students.add(processor.addStudent());
+                        saveToFile.saveStudents(students);
+                        break;
 
-                case 2:
-                    Student student = processor.studentVerification(students, input);
-                    if (student == null) {
-                        studentRunning = false;
-                    } else {
-                        library.printStudentInfo(student);
+                    case 2:
+                        Student student = processor.studentVerification(students, input);
+                        if (student == null) {
+                            studentRunning = false;
+                        } else {
+                            library.printStudentInfo(student);
 
-                        boolean studentRunning2 = true;
-                        while (studentRunning2) {
-                            menu.studentSecondMenu();
-                            int option2 = menu.getOption();
+                            boolean studentRunning2 = true;
+                            while (studentRunning2) {
+                                try {
+                                    menu.studentSecondMenu();
+                                    int option2 = menu.getOption();
 
-                            switch (option2) {
-                                case 1:
-                                    library.searchBooksByTitle(books, input);
-                                    break;
+                                    switch (option2) {
+                                        case 1:
+                                            library.searchBooksByTitle(books, input);
+                                            break;
 
-                                case 2:
-                                    library.searchBooksByAuthor(books, input);
-                                    break;
+                                        case 2:
+                                            library.searchBooksByAuthor(books, input);
+                                            break;
 
-                                case 3:
-                                    library.searchBooksByPublishedYear(books, input);
-                                    break;
+                                        case 3:
+                                            library.searchBooksByPublishedYear(books, input);
+                                            break;
 
-                                case 4:
-                                    processor.requestBookToLoan(student, books, loanRequests, input);
-                                    saveToFile.saveLoanRequests(loanRequests);
-                                    break;
+                                        case 4:
+                                            processor.requestBookToLoan(student, books, loanRequests, input);
+                                            saveToFile.saveLoanRequests(loanRequests);
+                                            break;
 
-                                case 5:
-                                    processor.returnBook(loans, librarians, student, input);
-                                    processor.clearFile("Loans.txt.file");
-                                    saveToFile.saveLoans(loans);
-                                    processor.clearFile("Books.txt.file");
-                                    saveToFile.saveBooks(books);
-                                    processor.clearFile("Librarians.txt.file");
-                                    saveToFile.saveLibrarian(librarians);
-                                    break;
+                                        case 5:
+                                            processor.returnBook(loans, librarians, student, input);
+                                            processor.clearFile("Loans.txt.file");
+                                            saveToFile.saveLoans(loans);
+                                            processor.clearFile("Books.txt.file");
+                                            saveToFile.saveBooks(books);
+                                            processor.clearFile("Librarians.txt.file");
+                                            saveToFile.saveLibrarian(librarians);
+                                            break;
 
-                                case 6:
-                                    library.printLoanBooksInfo(loans);
-                                    break;
+                                        case 6:
+                                            library.printLoanBooksInfo(loans);
+                                            break;
 
-                                case 7:
-                                    library.printStudentInfo(student);
-                                    break;
+                                        case 7:
+                                            library.printStudentInfo(student);
+                                            break;
 
-                                case 8:
-                                    System.out.println("Exiting...");
-                                    studentRunning2 = false;
-                                    break;
+                                        case 8:
+                                            System.out.println("Exiting...");
+                                            studentRunning2 = false;
+                                            break;
+
+                                        default:
+                                            System.out.println("Invalid option");
+                                    }
+
+                                } catch (Exception e) {
+                                    System.out.println("An error occurred" + e.getMessage());
+                                }
                             }
-
                         }
-                    }
-                    break;
+                        break;
 
-                case 3:
-                    System.out.println("Exiting...");
-                    studentRunning = false;
-                    break;
 
-                default:
-                    System.out.println("Invalid option");
+                    case 3:
+                        System.out.println("Exiting...");
+                        studentRunning = false;
+                        break;
+
+                    default:
+                        System.out.println("Invalid option");
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred" + e.getMessage());
             }
         }
     }
@@ -160,71 +177,75 @@ public class Application {
         boolean librarianRunning = true;
 
         while (librarianRunning) {
-            Librarian librarian = processor.librarianVerification(librarians, input);
-            if (librarian == null) {
-                break;
-            }
-
-            boolean librarianRunning2 = true;
-            while (librarianRunning2) {
-                menu.librarianMenu();
-                int option = menu.getOption();
-
-                switch (option) {
-                    case 1:
-                        processor.changeLibrarianPassword(librarian, input);
-                        saveToFile.saveLibrarian(librarians);
-                        break;
-
-                    case 2:
-                        books.add(processor.addBook(librarian));
-                        saveToFile.saveBooks(books);
-                        break;
-
-                    case 3:
-                        processor.handleLoanRequests(loanRequests, librarian, loans, input);
-                        saveToFile.saveLoans(loans);
-                        processor.clearFile("LoanRequests.txt.file");
-                        processor.clearFile("Books.txt.file");
-                        processor.clearFile("Librarians.txt.file");
-                        saveToFile.saveBooks(books);
-                        saveToFile.saveLibrarian(librarians);
-                        break;
-
-                    case 4:
-                        Book book = library.searchBookToChange(books, input);
-                        library.printBookInfo(book);
-                        processor.changeBookInfo(book, input);
-                        saveToFile.saveBooks(books);
-                        break;
-
-                    case 5:
-                        saveToFile.saveLoans(loans);
-                        library.printStudentLoanInfo(loans, input);
-                        break;
-
-                    case 6:
-                        processor.activateStudent(students, input);
-                        processor.clearFile("Students.txt.file");
-                        saveToFile.saveStudents(students);
-                        break;
-
-                    case 7:
-                        processor.deactivateStudent(students, input);
-                        processor.clearFile("Students.txt.file");
-                        saveToFile.saveStudents(students);
-                        break;
-
-                    case 8:
-                        System.out.println("Exiting...");
-                        librarianRunning2 = false;
-                        break;
-
-                    default:
-                        System.out.println("Invalid option");
+            try {
+                Librarian librarian = processor.librarianVerification(librarians, input);
+                if (librarian == null) {
+                    break;
                 }
+
+                boolean librarianRunning2 = true;
+                while (librarianRunning2) {
+                    menu.librarianMenu();
+                    int option = menu.getOption();
+
+                    switch (option) {
+                        case 1:
+                            processor.changeLibrarianPassword(librarian, input);
+                            saveToFile.saveLibrarian(librarians);
+                            break;
+
+                        case 2:
+                            books.add(processor.addBook(librarian));
+                            saveToFile.saveBooks(books);
+                            break;
+
+                        case 3:
+                            processor.handleLoanRequests(loanRequests, librarian, loans, input);
+                            saveToFile.saveLoans(loans);
+                            processor.clearFile("LoanRequests.txt.file");
+                            processor.clearFile("Books.txt.file");
+                            processor.clearFile("Librarians.txt.file");
+                            saveToFile.saveBooks(books);
+                            saveToFile.saveLibrarian(librarians);
+                            break;
+
+                        case 4:
+                            Book book = library.searchBookToChange(books, input);
+                            library.printBookInfo(book);
+                            processor.changeBookInfo(book, input);
+                            saveToFile.saveBooks(books);
+                            break;
+
+                        case 5:
+                            saveToFile.saveLoans(loans);
+                            library.printStudentLoanInfo(loans, input);
+                            break;
+
+                        case 6:
+                            processor.activateStudent(students, input);
+                            processor.clearFile("Students.txt.file");
+                            saveToFile.saveStudents(students);
+                            break;
+
+                        case 7:
+                            processor.deactivateStudent(students, input);
+                            processor.clearFile("Students.txt.file");
+                            saveToFile.saveStudents(students);
+                            break;
+
+                        case 8:
+                            System.out.println("Exiting...");
+                            librarianRunning2 = false;
+                            break;
+
+                        default:
+                            System.out.println("Invalid option");
+                    }
+                }
+                librarianRunning = false;
+            } catch (Exception e) {
+                System.out.println("An error occurred" + e.getMessage());
             }
-            librarianRunning = false;
         }
     }
 
@@ -236,30 +257,40 @@ public class Application {
         }
 
         while (managerRunning) {
-            menu.ManagerMenu();
-            int option = menu.getOption();
+            try {
 
-            switch (option) {
-                case 1:
-                    librarians.add(processor.addLibrarian());
-                    saveToFile.saveLibrarian(librarians);
-                    break;
+                menu.ManagerMenu();
+                int option = menu.getOption();
+
+                switch (option) {
+                    case 1:
+                        librarians.add(processor.addLibrarian());
+                        saveToFile.saveLibrarian(librarians);
+                        break;
 
 
-                case 2:
-                    library.printLibrarianInfo(librarians, books, input);
-                    break;
+                    case 2:
+                        library.printLibrarianInfo(librarians, books, input);
+                        break;
 
-                case 3:
-                    library.printLoanStatistics(books,loans);
+                    case 3:
+                        library.printLoanStatistics(books, loans);
+                        break;
 
-                case 4:
-                    System.out.println("Exiting...");
-                    managerRunning = false;
-                    break;
+                    case 4:
+                        library.printTop10StudentsWithMostDelays(students, loans);
+                        break;
 
-                default:
-                    System.out.println("Invalid option");
+                    case 5:
+                        System.out.println("Exiting...");
+                        managerRunning = false;
+                        break;
+
+                    default:
+                        System.out.println("Invalid option");
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred" + e.getMessage());
             }
         }
     }
@@ -268,29 +299,33 @@ public class Application {
 
         boolean guestRunning = true;
         while (guestRunning) {
-            menu.guestMenu();
-            int option = menu.getOption();
+            try {
+                menu.guestMenu();
+                int option = menu.getOption();
 
-            switch (option) {
-                case 1:
-                    guest.printSimpleDetails(students, books, loans);
-                    break;
+                switch (option) {
+                    case 1:
+                        guest.printSimpleDetails(students, books, loans);
+                        break;
 
-                case 2:
-                    library.printAllBooks(books);
-                    break;
+                    case 2:
+                        library.printAllBooks(books);
+                        break;
 
-                case 3:
-                    library.searchBooksByTitle(books, input);
+                    case 3:
+                        library.searchBooksByTitle(books, input);
 
-                case 4:
-                    System.out.println("Exiting...");
-                    guestRunning = false;
-                    break;
+                    case 4:
+                        System.out.println("Exiting...");
+                        guestRunning = false;
+                        break;
 
-                default:
-                    System.out.println("Invalid option");
+                    default:
+                        System.out.println("Invalid option");
 
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred" + e.getMessage());
             }
         }
     }

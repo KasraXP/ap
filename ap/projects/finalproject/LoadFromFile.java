@@ -17,7 +17,7 @@ public class LoadFromFile {
             String password = parts[1];
             String major = parts[2];
             LocalDate membershipDate = LocalDate.parse(parts[3]);
-            boolean isActive = Boolean.parseBoolean(parts[4]); // ✅ خواندن وضعیت فعال بودن
+            boolean isActive = Boolean.parseBoolean(parts[4]);
 
             Student student = new Student(userName, password, major, membershipDate);
             student.setActive(isActive);
@@ -55,7 +55,7 @@ public class LoadFromFile {
         }
     }
 
-    ArrayList<Librarian> loadLibrarians(String fileName) {
+    public ArrayList<Librarian> loadLibrarians(String fileName) {
         ArrayList<Librarian> librarians = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader("Librarians.txt.file"))) {
             String line;
@@ -228,6 +228,5 @@ public class LoadFromFile {
 
         return loans;
     }
-
 
 }

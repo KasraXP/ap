@@ -11,9 +11,7 @@ class Student extends User implements Storable {
         this.major = major;
         this.membershipDate = membershipDate;
         this.isActive = true;
-
     }
-
 
     String getMajor() {
         return major;
@@ -30,7 +28,6 @@ class Student extends User implements Storable {
     public void setActive(boolean active) {
         isActive = active;
     }
-
 
     public String toString() {
         return  userName + "," + password + "," + major + "," + membershipDate + "," + isActive;

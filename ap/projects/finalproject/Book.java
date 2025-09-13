@@ -7,7 +7,7 @@ class Book implements Storable {
     private int publishedYear;
     private boolean isLoaned;
     private int loanCount;
-    private String theLibrarian;
+    private final String theLibrarian;
 
     Book(String title, String author, int pages, int publishedYear, String theLibrarian) {
         this.title = title;
@@ -52,10 +52,6 @@ class Book implements Storable {
 
     public void setLoanCount(){
         this.loanCount++;
-    }
-
-    public int getLoanCount() {
-        return loanCount;
     }
 
     public void setNewTitle(String newTitle) {

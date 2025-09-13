@@ -1,5 +1,6 @@
 package projects.finalproject;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Menu {
@@ -58,15 +59,24 @@ public class Menu {
     }
 
     void ManagerMenu() {
-        System.out.println("====Manager Menu====");
-        System.out.println("1. Add a new Librarian ");
-        System.out.println("2. Show info of librarians ");
-        System.out.println("3. Show info of loans");
-        System.out.println("4. Exit");
+        System.out.println("\n====Manager Menu====");
+        System.out.println("1. Add a new librarian ");
+        System.out.println("2. Show librarian information");
+        System.out.println("3. Show loan information");
+        System.out.println("4. Show 10 students with the most delays");
+        System.out.println("5. Exit");
     }
 
     int getOption() {
-        System.out.print("\nEnter your Option: ");
-        return scan.nextInt();
+        while (true) {
+            try {
+                System.out.print("\nEnter your Option: ");
+                return scan.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("\nInvalid option. Please enter a number");
+                scan.nextLine();
+            }
+        }
     }
+
 }

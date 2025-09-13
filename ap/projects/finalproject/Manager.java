@@ -9,13 +9,12 @@ public class Manager {
         password = "1234567890";
     }
 
-    String getName(){
+    String getName() {
         return username;
     }
 
-    String getPassword(){
+    String getPassword() {
         return password;
     }
-
 
 }

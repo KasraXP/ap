@@ -1,9 +1,8 @@
 package projects.finalproject;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Library {
@@ -53,27 +52,34 @@ public class Library {
     }
 
     Book searchBookToChange(ArrayList<Book> books, Scanner scanner) {
-
         if (books.isEmpty()) {
             System.out.println("\nThere is no book in the database");
             return null;
         }
 
-        System.out.println("\nEnter the book title to search: ");
+        Set<String> bookTitles = new HashSet<>();
+        for (Book book : books) {
+            bookTitles.add(book.getTitle().toLowerCase());
+        }
+
+        System.out.println("\nEnter the book title to search (or 'exit' to cancel): ");
+
         while (true) {
-            String bookTitle = scanner.nextLine();
+            String bookTitle = scanner.nextLine().trim();
 
             if (bookTitle.equalsIgnoreCase("exit")) {
                 return null;
             }
 
-            for (Book book : books) {
-                if (book.getTitle().equalsIgnoreCase(bookTitle)) {
-                    return book;
+            if (bookTitles.contains(bookTitle.toLowerCase())) {
+                for (Book book : books) {
+                    if (book.getTitle().equalsIgnoreCase(bookTitle)) {
+                        return book;
+                    }
                 }
             }
 
-            System.out.println("\nThere is not a book with title " + bookTitle + "\n Please try again");
+            System.out.println("\nThere is not a book with title " + bookTitle + "\nPlease try again");
         }
     }
 
@@ -81,6 +87,15 @@ public class Library {
         if (books.isEmpty()) {
             System.out.println("\nThere is no book in the database");
             return;
+        }
+
+        Map<Integer, List<Book>> yearMap = new HashMap<>();
+        for (Book book : books) {
+            int year = book.getPublishedYear();
+            if (!yearMap.containsKey(year)) {
+                yearMap.put(year, new ArrayList<>());
+            }
+            yearMap.get(year).add(book);
         }
 
         System.out.println("\nEnter a book published year to search (or 0 to exit): ");
@@ -95,15 +110,15 @@ public class Library {
                     break;
                 }
 
-                List<Book> foundBooks = books.stream()
-                        .filter(book -> book.getPublishedYear() == year)
-                        .collect(Collectors.toList());
+                List<Book> foundBooks = yearMap.getOrDefault(year, new ArrayList<>());
 
                 if (foundBooks.isEmpty()) {
                     System.out.println("\nNo books found published in " + year);
                 } else {
                     System.out.println("\nFound " + foundBooks.size() + " book(s) published in " + year + ":");
-                    foundBooks.forEach(this::printBookInfo);
+                    for (Book book : foundBooks) {
+                        printBookInfo(book);
+                    }
                 }
 
                 System.out.println("\nEnter another year to search (or 0 to exit): ");
@@ -121,33 +136,37 @@ public class Library {
             return;
         }
 
+        Map<String, List<Book>> authorMap = new HashMap<>();
+        for (Book book : books) {
+            String authorKey = book.getAuthor().toLowerCase();
+            if (!authorMap.containsKey(authorKey)) {
+                authorMap.put(authorKey, new ArrayList<>());
+            }
+            authorMap.get(authorKey).add(book);
+        }
+
         System.out.println("\nEnter an author name to search (or 'exit' to exit): ");
 
         while (true) {
-            try {
-                String author = scanner.nextLine();
+            String author = scanner.nextLine().trim();
 
-
-                if (author.equalsIgnoreCase("exit")) {
-                    System.out.println("Exiting search...");
-                    break;
-                }
-
-                List<Book> foundBooks = books.stream().filter(book -> book.getAuthor().equalsIgnoreCase(author)).collect(Collectors.toList());
-
-                if (foundBooks.isEmpty()) {
-                    System.out.println("\nNo books found by the writer " + author);
-                } else {
-                    System.out.println("\nFound " + foundBooks.size() + " book(s) by " + author + ":");
-                    foundBooks.forEach(this::printBookInfo);
-                }
-
-                System.out.println("\nEnter another author to search (or 'exit' to exit): ");
-
-            } catch (java.util.InputMismatchException e) {
-                System.out.println("Invalid input! Please enter a valid author name.");
-                scanner.nextLine();
+            if (author.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting search...");
+                break;
             }
+
+            List<Book> foundBooks = authorMap.getOrDefault(author.toLowerCase(), new ArrayList<>());
+
+            if (foundBooks.isEmpty()) {
+                System.out.println("\nNo books found by author '" + author + "'");
+            } else {
+                System.out.println("\nFound " + foundBooks.size() + " book(s) by '" + author + "':");
+                for (Book book : foundBooks) {
+                    printBookInfo(book);
+                }
+            }
+
+            System.out.println("\nEnter another author to search (or 'exit' to exit): ");
         }
     }
 
@@ -157,35 +176,37 @@ public class Library {
             return;
         }
 
+        Map<String, List<Book>> titleMap = new HashMap<>();
+        for (Book book : books) {
+            String titleKey = book.getTitle().toLowerCase();
+            if (!titleMap.containsKey(titleKey)) {
+                titleMap.put(titleKey, new ArrayList<>());
+            }
+            titleMap.get(titleKey).add(book);
+        }
+
         System.out.println("\nEnter a book title to search (or 'exit' to exit): ");
 
         while (true) {
-            try {
-                String title = scanner.nextLine();
+            String title = scanner.nextLine().trim();
 
-
-                if (title.equalsIgnoreCase("exit")) {
-                    System.out.println("Exiting search...");
-                    break;
-                }
-
-                List<Book> foundBooks = books.stream()
-                        .filter(book -> book.getTitle().equalsIgnoreCase(title))
-                        .collect(Collectors.toList());
-
-                if (foundBooks.isEmpty()) {
-                    System.out.println("\nNo book found with the title " + title);
-                } else {
-                    System.out.println("\nFound " + foundBooks.size() + " book(s) with the title " + title + ":");
-                    foundBooks.forEach(this::printBookInfo);
-                }
-
-                System.out.println("\nEnter another book title to search (or 'exit' to exit): ");
-
-            } catch (java.util.InputMismatchException e) {
-                System.out.println("Invalid input! Please enter a valid book title.");
-                scanner.nextLine();
+            if (title.equalsIgnoreCase("exit")) {
+                System.out.println("Exiting search...");
+                break;
             }
+
+            List<Book> foundBooks = titleMap.getOrDefault(title.toLowerCase(), new ArrayList<>());
+
+            if (foundBooks.isEmpty()) {
+                System.out.println("\nNo book found with the title '" + title + "'");
+            } else {
+                System.out.println("\nFound " + foundBooks.size() + " book(s) with the title '" + title + "':");
+                for (Book book : foundBooks) {
+                    printBookInfo(book);
+                }
+            }
+
+            System.out.println("\nEnter another book title to search (or 'exit' to exit): ");
         }
     }
 
@@ -297,54 +318,97 @@ public class Library {
     void printLoanStatistics(ArrayList<Book> books, ArrayList<Loan> loans) {
         System.out.println("\n=== Loan Statistics Per Book ===");
 
+        Map<String, List<Loan>> loansByBook = new HashMap<>();
+        for (Loan loan : loans) {
+            String bookTitle = loan.getBook().getTitle();
+            if (!loansByBook.containsKey(bookTitle)) {
+                loansByBook.put(bookTitle, new ArrayList<>());
+            }
+            loansByBook.get(bookTitle).add(loan);
+        }
+
         for (Book book : books) {
-            int loanCountForBook = 0;
-            int returnedCountForBook = 0;
-            long totalLoanDaysForBook = 0;
+            List<Loan> bookLoans = loansByBook.getOrDefault(book.getTitle(), new ArrayList<>());
 
-            for (Loan loan : loans) {
-                if (loan.getBook().getTitle().equals(book.getTitle())) {
-                    loanCountForBook++;
+            int returnedCount = 0;
+            long totalDays = 0;
 
-                    if (loan.getReturnDate() != null) {
-                        returnedCountForBook++;
-                        long daysBetween = ChronoUnit.DAYS.between(loan.getLoanDate(), loan.getReturnDate());
-                        totalLoanDaysForBook += daysBetween;
-                    }
+            for (Loan loan : bookLoans) {
+                if (loan.getReturnDate() != null) {
+                    returnedCount++;
+                    totalDays += ChronoUnit.DAYS.between(loan.getLoanDate(), loan.getReturnDate());
                 }
             }
 
-            double averageLoanDaysForBook = returnedCountForBook > 0 ?
-                    (double) totalLoanDaysForBook / returnedCountForBook : 0;
+            double avgDays = returnedCount > 0 ? (double) totalDays / returnedCount : 0;
 
             System.out.println("\nBook: " + book.getTitle());
-            System.out.println("Total Times Loaned: " + loanCountForBook);
-            System.out.println("Times Returned: " + returnedCountForBook);
-            System.out.println("Currently on Loan: " + (loanCountForBook - returnedCountForBook));
-            System.out.println("Total Loan Days: " + totalLoanDaysForBook + " days");
-            System.out.println("Average Loan Duration: " + String.format("%.2f", averageLoanDaysForBook) + " days");
+            System.out.println("Total Times Loaned: " + bookLoans.size());
+            System.out.println("Times Returned: " + returnedCount);
+            System.out.println("Currently on Loan: " + (bookLoans.size() - returnedCount));
+            System.out.println("Total Loan Days: " + totalDays + " days");
+            System.out.println("Average Loan Duration: " + String.format("%.2f", avgDays) + " days");
             System.out.println("----------------------------");
         }
+    }
 
-        int totalLoans = loans.size();
-        int totalReturned = 0;
-        long totalLoanDays = 0;
+    void printTop10StudentsWithMostDelays(ArrayList<Student> students, ArrayList<Loan> loans) {
+        if (students.isEmpty() || loans.isEmpty()) {
+            System.out.println("No students or loans available.");
+            return;
+        }
+
+        Map<String, Long> studentDelays = new HashMap<>();
 
         for (Loan loan : loans) {
-            if (loan.getReturnDate() != null) {
-                totalReturned++;
-                long daysBetween = ChronoUnit.DAYS.between(loan.getLoanDate(), loan.getReturnDate());
-                totalLoanDays += daysBetween;
+            if (loan.getStudent() != null && loan.getReturnDate() != null) {
+                LocalDate dueDate = loan.getDueDate();
+                LocalDate returnDate = loan.getReturnDate();
+
+                if (returnDate.isAfter(dueDate)) {
+                    long daysLate = ChronoUnit.DAYS.between(dueDate, returnDate);
+                    String username = loan.getStudent().getUserName();
+
+                    studentDelays.put(username, studentDelays.getOrDefault(username, 0L) + daysLate);
+                }
             }
         }
 
-        double overallAverage = totalReturned > 0 ? (double) totalLoanDays / totalReturned : 0;
+        List<Map.Entry<String, Long>> delayList = new ArrayList<>(studentDelays.entrySet());
 
-        System.out.println("\n=== Overall Statistics ===");
-        System.out.println("Total Loans in System: " + totalLoans);
-        System.out.println("Total Returned Books: " + totalReturned);
-        System.out.println("Total Active Loans: " + (totalLoans - totalReturned));
-        System.out.println("Overall Average Loan Duration: " + String.format("%.2f", overallAverage) + " days");
+        delayList.sort((a, b) -> Long.compare(b.getValue(), a.getValue()));
+
+        System.out.println("\n=== Top 10 Students with Most Delay Days ===");
+
+        if (delayList.isEmpty()) {
+            System.out.println("No delays found in the system.");
+            return;
+        }
+
+        int count = 0;
+        for (Map.Entry<String, Long> entry : delayList) {
+            if (count >= 10) break;
+
+            String username = entry.getKey();
+            Long totalDelayDays = entry.getValue();
+
+            Student student = findStudentByUsername(students, username);
+            if (student != null) {
+                System.out.println((count + 1) + ". " + username + " - Major: " + student.getMajor() + " - Total Delay: " + totalDelayDays + " days");
+            } else {
+                System.out.println((count + 1) + ". " + username + " - Total Delay: " + totalDelayDays + " days");
+            }
+            count++;
+        }
+    }
+
+    private Student findStudentByUsername(ArrayList<Student> students, String username) {
+        for (Student student : students) {
+            if (student.getUserName().equals(username)) {
+                return student;
+            }
+        }
+        return null;
     }
 
 }
