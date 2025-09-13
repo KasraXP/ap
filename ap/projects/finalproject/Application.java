@@ -14,6 +14,8 @@ public class Application {
     private final Menu menu;
     private ArrayList<Student> students;
     private ArrayList<Librarian> librarians;
+    private ArrayList<Loan> loans;
+    private ArrayList<LoanRequest> loanRequests;
     private ArrayList<Book> books;
 
     public Application() {
@@ -33,6 +35,8 @@ public class Application {
         students = loadFromFile.loadStudents("Students.txt.file");
         librarians = loadFromFile.loadLibrarians("Librarians.txt.file");
         books = loadFromFile.loadBooks("Books.txt.file");
+        loanRequests = loadFromFile.loadLoanRequests("LoanRequests.txt.file",books,students);
+        loans = loadFromFile.loadLoans("Loans.txt.file",books,students);
     }
 
     public void run() {
@@ -97,7 +101,6 @@ public class Application {
 
                             switch (option2) {
                                 case 1:
-                                    System.out.println("test");
                                     library.searchBooksByTitle(books, input);
                                     break;
 
@@ -110,6 +113,10 @@ public class Application {
                                     break;
 
                                 case 4:
+                                    processor.requestBookToLoan(student, books, loanRequests, input);
+                                    saveToFile.saveLoanRequests(loanRequests);
+                                    break;
+
                                 case 5:
                                 case 6:
                                 case 7:
@@ -163,13 +170,21 @@ public class Application {
                         break;
 
                     case 3:
+                        processor.handleLoanRequests(loanRequests,loans,input);
+                        saveToFile.saveLoans(loans);
+                        processor.clearFile("LoanRequests.txt.file");
+                        processor.clearFile("Books.txt.file");
+                        saveToFile.saveBooks(books);
+                        break;
+
+                    case 4:
                         Book book = library.searchBookToChange(books, input);
                         library.printBookInfo(book);
                         processor.changeBookInfo(book, input);
                         saveToFile.saveBooks(books);
                         break;
 
-                    case 4:
+                    case 7:
                         System.out.println("Exiting...");
                         librarianRunning2 = false;
                         break;
@@ -219,7 +234,7 @@ public class Application {
 
             switch (option) {
                 case 1:
-                    guest.printTheNumberOfStudents(students);
+                    guest.printSimpleDetails(students,books,loans);
                     break;
 
                 case 2:
@@ -227,6 +242,9 @@ public class Application {
                     break;
 
                 case 3:
+                    library.searchBooksByTitle(books,input);
+
+                case 4:
                     System.out.println("Exiting...");
                     guestRunning = false;
                     break;

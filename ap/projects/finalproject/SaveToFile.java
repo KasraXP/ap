@@ -45,4 +45,28 @@ public class SaveToFile {
         }
     }
 
+    void saveLoanRequests(ArrayList<LoanRequest> loansRequests) {
+        try {
+            PrintWriter writer = new PrintWriter("LoanRequests.txt.file");
+            for (LoanRequest loanRequest : loansRequests) {
+                writer.println(loanRequest.toString());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error while saving loanRequests file" + e.getMessage());
+        }
+    }
+
+    void saveLoans(ArrayList<Loan> loans) {
+        try {
+            PrintWriter writer = new PrintWriter("Loans.txt.file");
+            for (Loan loan : loans) {
+                writer.println(loan.toString());
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Error while saving loans file" + e.getMessage());
+        }
+    }
+
 }

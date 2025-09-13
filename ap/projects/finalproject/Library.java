@@ -31,6 +31,10 @@ public class Library {
         System.out.println("Book author: " + book.getAuthor());
         System.out.println("Book pages: " + book.getPages());
         System.out.println("Book published year: " + book.getPublishedYear());
+        if(book.getIsLoaned()){
+            System.out.println("This book is loaned at the moment ");
+        }else
+            System.out.println("This book is not loaned at the moment ");
         System.out.println("___________________________");
     }
 

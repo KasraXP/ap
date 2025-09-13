@@ -2,6 +2,7 @@ package projects.finalproject;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -112,7 +113,7 @@ public class DataProcessor {
         }
     }
 
-    public boolean managerVerification(Scanner scanner, Manager manager) {
+    boolean managerVerification(Scanner scanner, Manager manager) {
         while (true) {
             System.out.print("Enter your username: ");
             String managerName = scanner.nextLine();
@@ -166,22 +167,139 @@ public class DataProcessor {
 
     }
 
+    void requestBookToLoan(Student student, ArrayList<Book> books, ArrayList<LoanRequest> loanRequests, Scanner scanner) {
+
+        if (books.isEmpty()) {
+            System.out.println("\nThere is no book in the database");
+            return;
+        }
+
+        ArrayList<Book> availableBooks = new ArrayList<>();
+        for (Book book : books) {
+            if (!book.getIsLoaned()) {
+                availableBooks.add(book);
+            }
+        }
+
+        if (availableBooks.isEmpty()) {
+            System.out.println("\nThere is not any available book to loan at the moment");
+            return;
+        }
+
+        System.out.println("Available books:");
+        for (int i = 0; i < availableBooks.size(); i++) {
+            System.out.println((i + 1) + ". " + availableBooks.get(i).getTitle());
+        }
+
+        System.out.println("Enter the number of the book you want to loan (or 0 to cancel):");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice == 0) {
+            return;
+        }
+
+        if (choice < 1 || choice > availableBooks.size()) {
+            System.out.println("Invalid choice!");
+            return;
+        }
+
+        Book selectedBook = availableBooks.get(choice - 1);
+
+        System.out.println("Enter number of days for loan:");
+        int loanDays = scanner.nextInt();
+        scanner.nextLine();
+
+        LoanRequest request = new LoanRequest(selectedBook, student, loanDays);
+        loanRequests.add(request);
+
+        System.out.println("Your loan request for " + loanDays + " days has been sent.");
+    }
+
+    public void handleLoanRequests(ArrayList<LoanRequest> loanRequests, ArrayList<Loan> loans, Scanner scanner) {
+
+        ArrayList<LoanRequest> pendingRequests = new ArrayList<>();
+        for (LoanRequest req : loanRequests) {
+            if (req.getStatus().equals("PENDING")) {
+                pendingRequests.add(req);
+            }
+        }
+
+        if (pendingRequests.isEmpty()) {
+            System.out.println("There are no pending loan requests.");
+            return;
+        }
+
+        System.out.println("Pending loan requests:");
+        for (int i = 0; i < pendingRequests.size(); i++) {
+            LoanRequest req = pendingRequests.get(i);
+            System.out.println((i + 1) + ". Student: " + req.getStudent().getUserName() +
+                    " - Book: " + req.getBook().getTitle() +
+                    " - Duration: " + req.getLoanDurationDays() + " days");
+        }
+
+        System.out.println("Enter the number of the request you want to handle (or 0 to cancel):");
+        int choice = scanner.nextInt();
+        scanner.nextLine();
+
+        if (choice == 0) {
+            return;
+        }
+
+        if (choice < 1 || choice > pendingRequests.size()) {
+            System.out.println("Invalid choice!");
+            return;
+        }
+
+        LoanRequest selectedRequest = pendingRequests.get(choice - 1);
+
+        System.out.println("Do you want to approve this request? (yes/no)");
+        String response = scanner.nextLine();
+
+        if (response.equalsIgnoreCase("yes")) {
+            selectedRequest.setStatus("APPROVED");
+
+            LocalDate now = LocalDate.now();
+            LocalDate dueDate = now.plusDays(selectedRequest.getLoanDurationDays());
+
+            Loan loan = new Loan(selectedRequest.getBook(), selectedRequest.getStudent(),
+                    now, dueDate, null);
+            loans.add(loan);
+            selectedRequest.getBook().setIsLoaned(true);
+
+            System.out.println("Loan request approved successfully.");
+
+        } else if (response.equalsIgnoreCase("no")) {
+            selectedRequest.setStatus("REJECTED");
+            System.out.println("Loan request rejected.");
+        } else {
+            System.out.println("Invalid response. Request remains pending.");
+        }
+    }
+
+    void clearFile(String fileName) {
+        try (PrintWriter writer = new PrintWriter(fileName)) {
+
+        } catch (IOException e) {
+            System.out.println("Error while clearing file" + e.getMessage());
+        }
+    }
 
     void creatingEmptyFiles() {
         try {
-            File file1 = new File("Books.txt");
+            File file1 = new File("Books.txt.file");
             if (!file1.exists()) file1.createNewFile();
 
-            File file2 = new File("Students.txt");
+            File file2 = new File("Students.txt.file");
             if (!file2.exists()) file2.createNewFile();
 
-            File file3 = new File("Librarians.txt");
+            File file3 = new File("Librarians.txt.file");
             if (!file3.exists()) file3.createNewFile();
 
-            File file4 = new File("LoanRequests.txt");
+            File file4 = new File("LoanRequests.txt.file");
             if (!file4.exists()) file4.createNewFile();
 
-            File file5 = new File("Loans.txt");
+            File file5 = new File("Loans.txt.file");
             if (!file5.exists()) file5.createNewFile();
 
         } catch (IOException e) {

@@ -20,9 +20,10 @@ public class Menu {
 
     void guestMenu() {
         System.out.println("\n====Guest Menu====");
-        System.out.println("1. Show the number of students");
-        System.out.println("2. Show all books");
-        System.out.println("3. Exit");
+        System.out.println("1. Show some details about Central Library");
+        System.out.println("2. Search a book by title");
+        System.out.println("3. Show all books");
+        System.out.println("4. Exit");
     }
 
     void studentFirstMenu() {
@@ -48,8 +49,9 @@ public class Menu {
         System.out.println("\n====Librarian Menu====");
         System.out.println("1. Change password ");
         System.out.println("2. Add new book ");
-        System.out.println("3. Change book info ");
-        System.out.println("4. Exit");
+        System.out.println("3. Show loan requests ");
+        System.out.println("4. Change book info ");
+        System.out.println("5. Exit");
     }
 
     void ManagerMenu() {
