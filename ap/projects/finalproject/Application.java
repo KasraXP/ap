@@ -35,8 +35,8 @@ public class Application {
         students = loadFromFile.loadStudents("Students.txt.file");
         librarians = loadFromFile.loadLibrarians("Librarians.txt.file");
         books = loadFromFile.loadBooks("Books.txt.file");
-        loanRequests = loadFromFile.loadLoanRequests("LoanRequests.txt.file",books,students);
-        loans = loadFromFile.loadLoans("Loans.txt.file",books,students);
+        loanRequests = loadFromFile.loadLoanRequests("LoanRequests.txt.file", books, students);
+        loans = loadFromFile.loadLoans("Loans.txt.file", books, students);
     }
 
     public void run() {
@@ -132,7 +132,7 @@ public class Application {
                                     break;
 
                                 case 7:
-                                   library.printStudentInfo(student);
+                                    library.printStudentInfo(student);
                                     break;
 
                                 case 8:
@@ -182,7 +182,7 @@ public class Application {
                         break;
 
                     case 3:
-                        processor.handleLoanRequests(loanRequests, librarian, loans,input);
+                        processor.handleLoanRequests(loanRequests, librarian, loans, input);
                         saveToFile.saveLoans(loans);
                         processor.clearFile("LoanRequests.txt.file");
                         processor.clearFile("Books.txt.file");
@@ -199,6 +199,11 @@ public class Application {
                         break;
 
                     case 5:
+                        saveToFile.saveLoans(loans);
+                        library.printStudentLoanInfo(loans, input);
+                        break;
+
+                    case 6:
                         System.out.println("Exiting...");
                         librarianRunning2 = false;
                         break;
@@ -230,7 +235,7 @@ public class Application {
 
 
                 case 2:
-                    library.printLibrarianInfo(librarians,books,input);
+                    library.printLibrarianInfo(librarians, books, input);
                     break;
 
                 case 3:
@@ -253,7 +258,7 @@ public class Application {
 
             switch (option) {
                 case 1:
-                    guest.printSimpleDetails(students,books,loans);
+                    guest.printSimpleDetails(students, books, loans);
                     break;
 
                 case 2:
@@ -261,7 +266,7 @@ public class Application {
                     break;
 
                 case 3:
-                    library.searchBooksByTitle(books,input);
+                    library.searchBooksByTitle(books, input);
 
                 case 4:
                     System.out.println("Exiting...");

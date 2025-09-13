@@ -51,7 +51,8 @@ public class Menu {
         System.out.println("2. Add new book ");
         System.out.println("3. Show loan requests ");
         System.out.println("4. Change book info ");
-        System.out.println("5. Exit");
+        System.out.println("5. Show loan information about student ");
+        System.out.println("6. Exit");
     }
 
     void ManagerMenu() {

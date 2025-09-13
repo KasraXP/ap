@@ -38,14 +38,14 @@ public class Library {
         System.out.println("___________________________");
     }
 
-    void printLoanBooksInfo( List<Loan> loans) {
+    void printLoanBooksInfo(List<Loan> loans) {
         if (loans == null) {
             System.out.println("No books found");
             return;
         }
 
         for (Loan loan : loans) {
-            if (loan.getReturnDate() == null ) {
+            if (loan.getReturnDate() == null) {
                 printBookInfo(loan.getBook());
             }
         }
@@ -132,9 +132,7 @@ public class Library {
                     break;
                 }
 
-                List<Book> foundBooks = books.stream()
-                        .filter(book -> book.getAuthor().equalsIgnoreCase(author))
-                        .collect(Collectors.toList());
+                List<Book> foundBooks = books.stream().filter(book -> book.getAuthor().equalsIgnoreCase(author)).collect(Collectors.toList());
 
                 if (foundBooks.isEmpty()) {
                     System.out.println("\nNo books found by the writer " + author);
@@ -213,7 +211,7 @@ public class Library {
             return;
         }
 
-        System.out.println("Enter a username to see librarian information about.");
+        System.out.println("Enter a username to see librarian information about ");
 
         while (true) {
 
@@ -225,12 +223,12 @@ public class Library {
             }
 
             for (Librarian librarian : librarians) {
-                if(librarian.getUserName().equalsIgnoreCase(username)) {
-                    System.out.println("Librarian name: " + librarian.getUserName());
+                if (librarian.getUserName().equalsIgnoreCase(username)) {
+                    System.out.println("\nLibrarian name: " + librarian.getUserName());
                     System.out.println("Librarian password: " + librarian.getPassword());
 
                     for (Book book : books) {
-                        if(book.getTheLibrarian().equalsIgnoreCase(librarian.getUserName())) {
+                        if (book.getTheLibrarian().equalsIgnoreCase(librarian.getUserName())) {
                             System.out.println("Added Book : " + book.getTitle());
                         }
 
@@ -238,16 +236,61 @@ public class Library {
 
                     System.out.println("Given books: " + librarian.getGivenCount());
                     System.out.println("Received books: " + librarian.getReceivedCount());
-                }else
-                    System.out.println("Invalid username. Please enter a valid username.");
+                } else
+                    System.out.println("\nInvalid username. Please enter a valid username");
             }
 
-            System.out.println("Enter another username to see librarian information about (or 'exit' to exit): ");
+            System.out.println("\nEnter another username to see librarian information about (or 'exit' to exit): ");
         }
-
 
 
     }
 
+    void printStudentLoanInfo(ArrayList<Loan> loans, Scanner scanner) {
+        if (loans == null || loans.isEmpty()) {
+            System.out.println("There are no loans in the library");
+            return;
+        }
+
+        System.out.println("Enter a username to see student's loan information (or type 'exit' to cancel):");
+
+        while (true) {
+            String username = scanner.nextLine().trim();
+
+            if (username.equalsIgnoreCase("exit")) return;
+            if (username.isEmpty()) {
+                System.out.println("Username cannot be empty! Please try again:");
+                continue;
+            }
+
+            List<Loan> studentLoans = loans.stream().filter(loan -> loan.getStudent() != null).filter(loan -> username.equalsIgnoreCase(loan.getStudent().getUserName())).collect(Collectors.toList());
+
+            if (studentLoans.isEmpty()) {
+                System.out.println("No loans found for student: " + username);
+                System.out.println("Please try another username or type 'exit' to cancel:");
+                continue;
+            }
+
+            long totalLoans = studentLoans.size();
+            long returnedCount = studentLoans.stream().filter(loan -> loan.getReturnDate() != null).count();
+            long notReturnedCount = totalLoans - returnedCount;
+
+            System.out.println("\n=== Loan Information for Student: " + username + " ===");
+            System.out.println("Total loans: " + totalLoans);
+            System.out.println("Returned books: " + returnedCount);
+            System.out.println("Not returned books: " + notReturnedCount);
+
+            List<Loan> notReturnedLoans = studentLoans.stream().filter(loan -> loan.getReturnDate() == null).collect(Collectors.toList());
+
+            if (!notReturnedLoans.isEmpty()) {
+                System.out.println("\nBooks not returned yet:");
+                notReturnedLoans.forEach(loan ->
+                        System.out.println("- " + loan.getBook().getTitle() + " (Loaned on: " + loan.getLoanDate() + ", Due: " + loan.getDueDate() + ")")
+                );
+            }
+
+            System.out.println("\nEnter another username or type 'exit' to cancel:");
+        }
+    }
 
 }
