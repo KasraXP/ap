@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -455,7 +456,9 @@ public class DataProcessor {
         }
     }
 
-    void clearFile(String fileName) {
+
+
+        void clearFile(String fileName) {
         try (PrintWriter writer = new PrintWriter(fileName)) {
 
         } catch (IOException e) {
@@ -485,3 +488,4 @@ public class DataProcessor {
         }
     }
 }
+

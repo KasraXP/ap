@@ -1,5 +1,6 @@
 package projects.finalproject;
 
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -291,6 +292,59 @@ public class Library {
 
             System.out.println("\nEnter another username or type 'exit' to cancel:");
         }
+    }
+
+    void printLoanStatistics(ArrayList<Book> books, ArrayList<Loan> loans) {
+        System.out.println("\n=== Loan Statistics Per Book ===");
+
+        for (Book book : books) {
+            int loanCountForBook = 0;
+            int returnedCountForBook = 0;
+            long totalLoanDaysForBook = 0;
+
+            for (Loan loan : loans) {
+                if (loan.getBook().getTitle().equals(book.getTitle())) {
+                    loanCountForBook++;
+
+                    if (loan.getReturnDate() != null) {
+                        returnedCountForBook++;
+                        long daysBetween = ChronoUnit.DAYS.between(loan.getLoanDate(), loan.getReturnDate());
+                        totalLoanDaysForBook += daysBetween;
+                    }
+                }
+            }
+
+            double averageLoanDaysForBook = returnedCountForBook > 0 ?
+                    (double) totalLoanDaysForBook / returnedCountForBook : 0;
+
+            System.out.println("\nBook: " + book.getTitle());
+            System.out.println("Total Times Loaned: " + loanCountForBook);
+            System.out.println("Times Returned: " + returnedCountForBook);
+            System.out.println("Currently on Loan: " + (loanCountForBook - returnedCountForBook));
+            System.out.println("Total Loan Days: " + totalLoanDaysForBook + " days");
+            System.out.println("Average Loan Duration: " + String.format("%.2f", averageLoanDaysForBook) + " days");
+            System.out.println("----------------------------");
+        }
+
+        int totalLoans = loans.size();
+        int totalReturned = 0;
+        long totalLoanDays = 0;
+
+        for (Loan loan : loans) {
+            if (loan.getReturnDate() != null) {
+                totalReturned++;
+                long daysBetween = ChronoUnit.DAYS.between(loan.getLoanDate(), loan.getReturnDate());
+                totalLoanDays += daysBetween;
+            }
+        }
+
+        double overallAverage = totalReturned > 0 ? (double) totalLoanDays / totalReturned : 0;
+
+        System.out.println("\n=== Overall Statistics ===");
+        System.out.println("Total Loans in System: " + totalLoans);
+        System.out.println("Total Returned Books: " + totalReturned);
+        System.out.println("Total Active Loans: " + (totalLoans - totalReturned));
+        System.out.println("Overall Average Loan Duration: " + String.format("%.2f", overallAverage) + " days");
     }
 
 }

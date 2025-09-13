@@ -60,8 +60,9 @@ public class Menu {
     void ManagerMenu() {
         System.out.println("====Manager Menu====");
         System.out.println("1. Add a new Librarian ");
-        System.out.println("2. Show info of Librarian ");
-        System.out.println("3. Exit");
+        System.out.println("2. Show info of librarians ");
+        System.out.println("3. Show info of loans");
+        System.out.println("4. Exit");
     }
 
     int getOption() {

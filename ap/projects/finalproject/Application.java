@@ -251,6 +251,9 @@ public class Application {
                     break;
 
                 case 3:
+                    library.printLoanStatistics(books,loans);
+
+                case 4:
                     System.out.println("Exiting...");
                     managerRunning = false;
                     break;
