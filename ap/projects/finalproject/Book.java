@@ -54,6 +54,10 @@ class Book implements Storable {
         this.loanCount++;
     }
 
+    int getLoanCount() {
+        return loanCount;
+    }
+
     public void setNewTitle(String newTitle) {
         this.title = newTitle;
     }
