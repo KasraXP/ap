@@ -1,8 +1,5 @@
 package projects.finalproject;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
@@ -552,36 +549,6 @@ public class DataProcessor {
             }
 
             System.out.println("Enter another username to activate or type 'exit' to cancel:");
-        }
-    }
-
-    void clearFile(String fileName) {
-        try (PrintWriter writer = new PrintWriter(fileName)) {
-
-        } catch (IOException e) {
-            System.out.println("Error while clearing file" + e.getMessage());
-        }
-    }
-
-    void creatingEmptyFiles() {
-        try {
-            File file1 = new File("Books.txt.file");
-            if (!file1.exists()) file1.createNewFile();
-
-            File file2 = new File("Students.txt.file");
-            if (!file2.exists()) file2.createNewFile();
-
-            File file3 = new File("Librarians.txt.file");
-            if (!file3.exists()) file3.createNewFile();
-
-            File file4 = new File("LoanRequests.txt.file");
-            if (!file4.exists()) file4.createNewFile();
-
-            File file5 = new File("Loans.txt.file");
-            if (!file5.exists()) file5.createNewFile();
-
-        } catch (IOException e) {
-            System.out.println("Error while creating files: " + e.getMessage());
         }
     }
 }

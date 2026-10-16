@@ -9,8 +9,7 @@ public class Application {
     private final Manager manager;
     private final DataProcessor processor;
     private final Guest guest;
-    private final LoadFromFile loadFromFile;
-    private final SaveToFile saveToFile;
+    private final Database db;
     private final Menu menu;
     private ArrayList<Student> students;
     private ArrayList<Librarian> librarians;
@@ -24,19 +23,18 @@ public class Application {
         this.manager = new Manager();
         this.processor = new DataProcessor();
         this.guest = new Guest();
-        this.loadFromFile = new LoadFromFile();
-        this.saveToFile = new SaveToFile();
+        this.db = new Database();
         this.menu = new Menu();
         initializeData();
     }
 
     private void initializeData() {
-        processor.creatingEmptyFiles();
-        students = loadFromFile.loadStudents("Students.txt.file");
-        librarians = loadFromFile.loadLibrarians("Librarians.txt.file");
-        books = loadFromFile.loadBooks("Books.txt.file");
-        loanRequests = loadFromFile.loadLoanRequests("LoanRequests.txt.file", books, students);
-        loans = loadFromFile.loadLoans("Loans.txt.file", books, students);
+        db.init();
+        students = db.loadStudents();
+        librarians = db.loadLibrarians();
+        books = db.loadBooks();
+        loanRequests = db.loadLoanRequests(books, students);
+        loans = db.loadLoans(books, students);
     }
 
     public void run() {
@@ -66,6 +64,7 @@ public class Application {
 
                     case 5: {
                         System.out.println("Thank you!");
+                        db.close();
                         System.exit(0);
                         break;
                     }
@@ -90,7 +89,7 @@ public class Application {
                 switch (option) {
                     case 1:
                         students.add(processor.addStudent());
-                        saveToFile.saveStudents(students);
+                        db.saveStudents(students);
                         break;
 
                     case 2:
@@ -121,17 +120,14 @@ public class Application {
 
                                         case 4:
                                             processor.requestBookToLoan(student, books, loanRequests, input);
-                                            saveToFile.saveLoanRequests(loanRequests);
+                                            db.saveLoanRequests(loanRequests);
                                             break;
 
                                         case 5:
                                             processor.returnBook(loans, librarians, student, input);
-                                            processor.clearFile("Loans.txt.file");
-                                            saveToFile.saveLoans(loans);
-                                            processor.clearFile("Books.txt.file");
-                                            saveToFile.saveBooks(books);
-                                            processor.clearFile("Librarians.txt.file");
-                                            saveToFile.saveLibrarian(librarians);
+                                            db.saveLoans(loans);
+                                            db.saveBooks(books);
+                                            db.saveLibrarians(librarians);
                                             break;
 
                                         case 6:
@@ -189,49 +185,45 @@ public class Application {
                     int option = menu.getOption();
 
                     switch (option) {
-                        case 1:
-                            processor.changeLibrarianPassword(librarian, input);
-                            saveToFile.saveLibrarian(librarians);
-                            break;
+                    case 1:
+                        processor.changeLibrarianPassword(librarian, input);
+                        db.saveLibrarians(librarians);
+                        break;
 
-                        case 2:
-                            books.add(processor.addBook(librarian));
-                            saveToFile.saveBooks(books);
-                            break;
+                    case 2:
+                        books.add(processor.addBook(librarian));
+                        db.saveBooks(books);
+                        break;
 
-                        case 3:
-                            processor.handleLoanRequests(loanRequests, librarian, loans, input);
-                            saveToFile.saveLoans(loans);
-                            processor.clearFile("LoanRequests.txt.file");
-                            processor.clearFile("Books.txt.file");
-                            processor.clearFile("Librarians.txt.file");
-                            saveToFile.saveBooks(books);
-                            saveToFile.saveLibrarian(librarians);
-                            break;
+                    case 3:
+                        processor.handleLoanRequests(loanRequests, librarian, loans, input);
+                        db.saveLoanRequests(loanRequests);
+                        db.saveLoans(loans);
+                        db.saveBooks(books);
+                        db.saveLibrarians(librarians);
+                        break;
 
-                        case 4:
-                            Book book = library.searchBookToChange(books, input);
-                            library.printBookInfo(book);
-                            processor.changeBookInfo(book, input);
-                            saveToFile.saveBooks(books);
-                            break;
+                    case 4:
+                        Book book = library.searchBookToChange(books, input);
+                        library.printBookInfo(book);
+                        processor.changeBookInfo(book, input);
+                        db.saveBooks(books);
+                        break;
 
-                        case 5:
-                            saveToFile.saveLoans(loans);
-                            library.printStudentLoanInfo(loans, input);
-                            break;
+                    case 5:
+                        db.saveLoans(loans);
+                        library.printStudentLoanInfo(loans, input);
+                        break;
 
-                        case 6:
-                            processor.activateStudent(students, input);
-                            processor.clearFile("Students.txt.file");
-                            saveToFile.saveStudents(students);
-                            break;
+                    case 6:
+                        processor.activateStudent(students, input);
+                        db.saveStudents(students);
+                        break;
 
-                        case 7:
-                            processor.deactivateStudent(students, input);
-                            processor.clearFile("Students.txt.file");
-                            saveToFile.saveStudents(students);
-                            break;
+                    case 7:
+                        processor.deactivateStudent(students, input);
+                        db.saveStudents(students);
+                        break;
 
                         case 8:
                             System.out.println("Exiting...");
@@ -265,7 +257,7 @@ public class Application {
                 switch (option) {
                     case 1:
                         librarians.add(processor.addLibrarian());
-                        saveToFile.saveLibrarian(librarians);
+                        db.saveLibrarians(librarians);
                         break;
 
 
@@ -314,6 +306,7 @@ public class Application {
 
                     case 3:
                         library.searchBooksByTitle(books, input);
+                        break;
 
                     case 4:
                         System.out.println("Exiting...");
