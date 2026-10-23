@@ -11,6 +11,7 @@ public class Application {
     private final Guest guest;
     private final Database db;
     private final Menu menu;
+    private WebService webService;
     private ArrayList<Student> students;
     private ArrayList<Librarian> librarians;
     private ArrayList<Loan> loans;
@@ -40,6 +41,9 @@ public class Application {
     public void run() {
         System.out.println("Welcome to " + library.getLibraryName() + " library!");
 
+        webService = new WebService(db, students, librarians, books, loanRequests, loans);
+        webService.start();
+
         while (true) {
             try {
                 menu.showMainMenu();
@@ -64,6 +68,7 @@ public class Application {
 
                     case 5: {
                         System.out.println("Thank you!");
+                        webService.stop();
                         db.close();
                         System.exit(0);
                         break;
