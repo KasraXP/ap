@@ -391,20 +391,24 @@ public class DataProcessor {
         String response = scanner.nextLine();
 
         if (response.equalsIgnoreCase("yes")) {
-            selectedRequest.setStatus("APPROVED");
+            if (selectedRequest.getBook().getIsLoaned()) {
+                System.out.println("This book is currently on loan to another student.");
+                System.out.println("Request remains pending.");
+            } else {
+                selectedRequest.setStatus("APPROVED");
 
-            LocalDate now = LocalDate.now();
-            LocalDate dueDate = now.plusDays(selectedRequest.getLoanDurationDays());
+                LocalDate now = LocalDate.now();
+                LocalDate dueDate = now.plusDays(selectedRequest.getLoanDurationDays());
 
-            Loan loan = new Loan(selectedRequest.getBook(), selectedRequest.getStudent(),
-                    now, dueDate, null);
-            loans.add(loan);
-            selectedRequest.getBook().setIsLoaned(true);
-            selectedRequest.getBook().setLoanCount();
-            librarian.setGivenCount();
+                Loan loan = new Loan(selectedRequest.getBook(), selectedRequest.getStudent(),
+                        now, dueDate, null);
+                loans.add(loan);
+                selectedRequest.getBook().setIsLoaned(true);
+                selectedRequest.getBook().setLoanCount();
+                librarian.setGivenCount();
 
-
-            System.out.println("Loan request approved successfully.");
+                System.out.println("Loan request approved successfully.");
+            }
 
         } else if (response.equalsIgnoreCase("no")) {
             selectedRequest.setStatus("REJECTED");
@@ -449,13 +453,15 @@ public class DataProcessor {
         selectedLoan.getBook().setIsLoaned(false);
         selectedLoan.setReturnDate(LocalDate.now());
 
-        Random random = new Random();
-        int rnd = random.nextInt(librarians.size());
-        Librarian lib = librarians.get(rnd);
-        lib.setReceivedCount();
-
-
-        System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned to " + lib.getUserName());
+        if (librarians.isEmpty()) {
+            System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned.");
+        } else {
+            Random random = new Random();
+            int rnd = random.nextInt(librarians.size());
+            Librarian lib = librarians.get(rnd);
+            lib.setReceivedCount();
+            System.out.println("Book \"" + selectedLoan.getBook().getTitle() + "\" has been successfully returned to " + lib.getUserName());
+        }
     }
 
     void deactivateStudent(ArrayList<Student> students, Scanner scanner) {

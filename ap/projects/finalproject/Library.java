@@ -244,8 +244,11 @@ public class Library {
                 return;
             }
 
+            boolean found = false;
+
             for (Librarian librarian : librarians) {
                 if (librarian.getUserName().equalsIgnoreCase(username)) {
+                    found = true;
                     System.out.println("\nLibrarian name: " + librarian.getUserName());
                     System.out.println("Librarian password: " + librarian.getPassword());
 
@@ -258,8 +261,11 @@ public class Library {
 
                     System.out.println("Given books: " + librarian.getGivenCount());
                     System.out.println("Received books: " + librarian.getReceivedCount());
-                } else
-                    System.out.println("\nInvalid username. Please enter a valid username");
+                }
+            }
+
+            if (!found) {
+                System.out.println("\nInvalid username. Please enter a valid username");
             }
 
             System.out.println("\nEnter another username to see librarian information about (or 'exit' to exit): ");

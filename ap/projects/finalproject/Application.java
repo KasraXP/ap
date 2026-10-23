@@ -88,8 +88,11 @@ public class Application {
 
                 switch (option) {
                     case 1:
-                        students.add(processor.addStudent());
-                        db.saveStudents(students);
+                        Student newStudent = processor.addStudent();
+                        if (newStudent != null) {
+                            students.add(newStudent);
+                            db.saveStudents(students);
+                        }
                         break;
 
                     case 2:
@@ -191,8 +194,11 @@ public class Application {
                         break;
 
                     case 2:
-                        books.add(processor.addBook(librarian));
-                        db.saveBooks(books);
+                        Book newBook = processor.addBook(librarian);
+                        if (newBook != null) {
+                            books.add(newBook);
+                            db.saveBooks(books);
+                        }
                         break;
 
                     case 3:
@@ -256,8 +262,11 @@ public class Application {
 
                 switch (option) {
                     case 1:
-                        librarians.add(processor.addLibrarian());
-                        db.saveLibrarians(librarians);
+                        Librarian newLibrarian = processor.addLibrarian();
+                        if (newLibrarian != null) {
+                            librarians.add(newLibrarian);
+                            db.saveLibrarians(librarians);
+                        }
                         break;
 
 
