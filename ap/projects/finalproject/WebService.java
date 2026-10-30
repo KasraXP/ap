@@ -2,6 +2,7 @@ package projects.finalproject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import com.sun.net.httpserver.HttpExchange;
@@ -71,6 +72,7 @@ class WebService {
             return;
         }
 
+        server.createContext("/", this::handleRoot);
         server.createContext("/books", this::handleBooks);
         server.createContext("/students", this::handleStudents);
         server.createContext("/loans", this::handleLoans);
@@ -83,6 +85,27 @@ class WebService {
     void stop() {
         if (server != null) {
             server.stop(0);
+        }
+    }
+
+    private void handleRoot(HttpExchange exchange) throws IOException {
+        String path = exchange.getRequestURI().getPath();
+
+        if (path.equals("/") || path.isEmpty()) {
+            JsonObject index = new JsonObject();
+            index.addProperty("service", "Central Library Web Service");
+            JsonObject endpoints = new JsonObject();
+            endpoints.addProperty("GET /books", "list all books");
+            endpoints.addProperty("GET /students", "list all students");
+            endpoints.addProperty("GET /loans", "list all loans");
+            endpoints.addProperty("GET /loan-requests", "list all loan requests");
+            endpoints.addProperty("POST /books", "add a book");
+            endpoints.addProperty("POST /loan-requests", "create a loan request");
+            endpoints.addProperty("POST /loans/return", "return a book");
+            index.add("endpoints", endpoints);
+            sendJson(exchange, 200, gson.toJson(index));
+        } else {
+            sendError(exchange, 404, "Unknown path: " + path + " - open / to see available endpoints");
         }
     }
 
