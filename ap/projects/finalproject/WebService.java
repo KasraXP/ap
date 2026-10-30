@@ -74,6 +74,7 @@ class WebService {
         server.createContext("/", this::handleRoot);
         server.createContext("/books", this::handleBooks);
         server.createContext("/students", this::handleStudents);
+        server.createContext("/librarians", this::handleLibrarians);
         server.createContext("/loans", this::handleLoans);
         server.createContext("/loan-requests", this::handleLoanRequests);
         server.setExecutor(null);
@@ -98,6 +99,7 @@ class WebService {
                     + "<ul>"
                     + "<li><a href=\"/books\">GET /books</a> - list all books</li>"
                     + "<li><a href=\"/students\">GET /students</a> - list all students</li>"
+                    + "<li><a href=\"/librarians\">GET /librarians</a> - list all librarians</li>"
                     + "<li><a href=\"/loans\">GET /loans</a> - list all loans</li>"
                     + "<li><a href=\"/loan-requests\">GET /loan-requests</a> - list all loan requests</li>"
                     + "</ul>"
@@ -116,6 +118,18 @@ class WebService {
             }
         } else {
             sendError(exchange, 404, "Unknown path: " + path + " - open / to see available endpoints");
+        }
+    }
+
+    private void handleLibrarians(HttpExchange exchange) throws IOException {
+        try {
+            if (isGet(exchange)) {
+                sendJson(exchange, 200, gson.toJson(librarians));
+            } else {
+                sendError(exchange, 405, "Method not allowed");
+            }
+        } catch (Exception e) {
+            sendError(exchange, 400, "Invalid request: " + e.getMessage());
         }
     }
 
