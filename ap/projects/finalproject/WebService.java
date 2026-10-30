@@ -2,7 +2,6 @@ package projects.finalproject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import com.sun.net.httpserver.HttpExchange;
@@ -92,18 +91,29 @@ class WebService {
         String path = exchange.getRequestURI().getPath();
 
         if (path.equals("/") || path.isEmpty()) {
-            JsonObject index = new JsonObject();
-            index.addProperty("service", "Central Library Web Service");
-            JsonObject endpoints = new JsonObject();
-            endpoints.addProperty("GET /books", "list all books");
-            endpoints.addProperty("GET /students", "list all students");
-            endpoints.addProperty("GET /loans", "list all loans");
-            endpoints.addProperty("GET /loan-requests", "list all loan requests");
-            endpoints.addProperty("POST /books", "add a book");
-            endpoints.addProperty("POST /loan-requests", "create a loan request");
-            endpoints.addProperty("POST /loans/return", "return a book");
-            index.add("endpoints", endpoints);
-            sendJson(exchange, 200, gson.toJson(index));
+            String html = "<html><head><meta charset=\"utf-8\"><title>Central Library Web Service</title></head>"
+                    + "<body style=\"font-family:sans-serif;max-width:600px;margin:40px auto\">"
+                    + "<h1>Central Library Web Service</h1>"
+                    + "<h2>Browse (click)</h2>"
+                    + "<ul>"
+                    + "<li><a href=\"/books\">GET /books</a> - list all books</li>"
+                    + "<li><a href=\"/students\">GET /students</a> - list all students</li>"
+                    + "<li><a href=\"/loans\">GET /loans</a> - list all loans</li>"
+                    + "<li><a href=\"/loan-requests\">GET /loan-requests</a> - list all loan requests</li>"
+                    + "</ul>"
+                    + "<h2>Actions (POST, use curl or Postman)</h2>"
+                    + "<ul>"
+                    + "<li>POST /books - add a book</li>"
+                    + "<li>POST /loan-requests - create a loan request</li>"
+                    + "<li>POST /loans/return - return a book</li>"
+                    + "</ul>"
+                    + "</body></html>";
+            byte[] bytes = html.getBytes(StandardCharsets.UTF_8);
+            exchange.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
+            exchange.sendResponseHeaders(200, bytes.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(bytes);
+            }
         } else {
             sendError(exchange, 404, "Unknown path: " + path + " - open / to see available endpoints");
         }
